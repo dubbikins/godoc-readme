@@ -1,0 +1,18 @@
+# {{.Pkg.Name}}
+
+{{.Pkg.Doc}}
+{{ $num_funs := len .Pkg.Funcs }}{{ if gt $num_funs 0 }}## Functions
+{{ range .Pkg.Funcs }}
+### {{.Name}}
+
+{{.Doc}}
+
+#### Examples
+
+{{ range .Examples }}
+```go
+{{.}}
+```
+{{end}}
+
+{{ end }}{{ end }}
