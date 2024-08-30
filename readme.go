@@ -1,27 +1,17 @@
-/*
-Godoc-readme is a CLI that generates a README.md file for your go project using comments you already write for godoc!
-
-Usage:
-
-	godoc-readme [flags]
-
-Flags:
-
-	-h, --help   help for auto-readme
-	-r, --recursive   recursively search for go packages in the directory and generate a README.md for each package
-
-> [!Note]
-> Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
-*/
+// more details about the package
 package godoc_readme
 
 //go:generate go run ./cmd/main.go
 import (
+	"bytes"
 	_ "embed"
 	"fmt"
 	"go/doc"
-	"log"
+	"go/format"
 	"os"
+	"path"
+	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/spf13/cobra"
@@ -30,9 +20,9 @@ import (
 
 // root command
 var rootCmd = &cobra.Command{
-	Use:   "auto-readme",
-	Short: "Generate README.md file for your go project using comments you alreayd write for godoc",
-	Long:  `Generate README.md file for your go project using comments you alreayd write for godoc`,
+	Use:   "godoc-reademe",
+	Short: "Generate README.md file for your go project using comments you already write for godoc",
+	Long:  `Generate README.md file for your go project using comments you already write for godoc`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if readme, err := NewReadme(); err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -46,8 +36,12 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-// Execute runs the root command
-func Execute() {
+// Execute runs the root command using the os.Args by default
+// Optionally, you can pass in a list of arguments to run the command with
+func Execute(args ...string) {
+	if len(args) > 0 {
+		rootCmd.SetArgs(args)
+	}
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
@@ -57,12 +51,24 @@ func Execute() {
 //go:embed README.tmpl
 var readme_template string
 
+type Set[T comparable] map[T]struct{}
+
+func (s Set[T]) Add(v T) {
+	s[v] = struct{}{}
+}
+
+func (s Set[T]) Contains(v T) bool {
+	_, ok := s[v]
+	return ok
+}
+
 // Readme is a struct that holds the packages, ast and docs of the package
 // And is used to pass data to the readme template
 type Readme struct {
-	Pkgs    []*packages.Package
-	Docs    []*doc.Package
-	options *ReadmeOptions
+	pkgs        []*packages.Package
+	RefinedPkgs map[string]*packages.Package
+	Docs        []*doc.Package
+	options     *ReadmeOptions
 }
 
 type ReadmeOptions struct {
@@ -73,91 +79,140 @@ type ReadmeOptions struct {
 func NewReadme(opts ...func(*ReadmeOptions)) (readme *Readme, err error) {
 	readme = &Readme{
 		options: &ReadmeOptions{
-			package_load_mode: packages.NeedName | packages.NeedFiles | packages.NeedSyntax | packages.NeedTypes | packages.NeedDeps | packages.NeedImports | packages.NeedTypes,
+			package_load_mode: packages.NeedName | packages.NeedFiles | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypes | packages.NeedEmbedFiles | packages.NeedCompiledGoFiles | packages.NeedImports | packages.NeedTypesInfo | packages.NeedTypesSizes | packages.NeedDeps,
 		},
+		RefinedPkgs: map[string]*packages.Package{},
 	}
 	for _, opt := range opts {
 		opt(readme.options)
 	}
-	if err = readme.loadPackages(); err != nil {
+	cfg := &packages.Config{
+		Mode:  readme.options.package_load_mode,
+		Dir:   readme.options.Dir,
+		Tests: true,
+	}
+	readme.pkgs, err = packages.Load(cfg, "./...")
+	if err != nil {
 		return
 	}
-
-	readme.Docs = make([]*doc.Package, len(readme.Pkgs))
-	for i, pkg := range readme.Pkgs {
-		log.Printf("Package %q\n", pkg.Name)
-		log.Println("Go Files:")
-
-		for _, file := range pkg.GoFiles {
-			log.Printf("\t- %q\n", file)
-
-		}
-
-		if readme.Docs[i], err = doc.NewFromFiles(pkg.Fset, pkg.Syntax, pkg.PkgPath); err != nil {
-			return
-		}
-
-		log.Println("Go Docs:")
-		log.Println(readme.Docs[i].Doc)
-		for _, fn := range readme.Docs[i].Funcs {
-			log.Printf("\t- %q\n", fn.Doc)
-		}
-
-	}
-
-	// for i, file := range readme.Pkg.Syntax {
-
-	// 	readme.AST.Files[readme.Pkg.GoFiles[i]] = file
-	// }
-
-	//
-	// fmt.Println(readme.Docs.Doc)
-
-	return
-}
-
-func (r *Readme) loadPackages() (err error) {
-
-	cfg := &packages.Config{
-		Mode: r.options.package_load_mode,
-		Dir:  r.options.Dir,
-	}
-	r.Pkgs, err = packages.Load(cfg, ".")
-	if err != nil {
-		return fmt.Errorf("failed to load package in dir %q: %w", cfg.Dir, err)
-	}
-	if packages.PrintErrors(r.Pkgs) > 0 {
+	if packages.PrintErrors(readme.pkgs) > 0 {
 		// Package failed to parse
 		os.Exit(1)
 	}
 
+	readme.Docs = []*doc.Package{}
+
+	for _, pkg := range readme.pkgs {
+		for f_index, file := range pkg.CompiledGoFiles {
+			//Strip all of the files that are not go files
+			if !strings.HasSuffix(file, ".go") {
+				pkg.Syntax = append(pkg.Syntax[:f_index], pkg.Syntax[f_index+1:]...)
+			}
+		}
+		if len(pkg.Syntax) == 0 {
+			continue
+		}
+		//If the package is already in the refined packages map, then we check if the package is not a test package
+		// The test package will include more details that we want
+		if p, found := readme.RefinedPkgs[pkg.Name]; found {
+			if !strings.Contains(p.ID, "test") {
+				readme.RefinedPkgs[pkg.Name] = pkg
+			}
+		}
+		readme.RefinedPkgs[pkg.Name] = pkg
+	}
 	return
 }
 
 type PackageReadme struct {
 	Options ReadmeOptions
+	P       *packages.Package
 	Pkg     *doc.Package
 }
 
+// ExampleCode returns a function that generates the example code for a given example
+// given a package containing the example code
+func ExampleCode(pkg *packages.Package) func(*doc.Example) string {
+
+	return func(ex *doc.Example) string {
+		var buf = bytes.NewBuffer([]byte(fmt.Sprintf("```go\nfunc Example%s", ex.Name)))
+		if ex.Code != nil {
+			format.Node(buf, pkg.Fset, ex.Code)
+		}
+		output_lines := strings.Split(ex.Output, "\n")
+		buf.WriteString("\n // Output:")
+		for _, line := range output_lines {
+			buf.WriteString(fmt.Sprintf("\n // %s", line))
+		}
+
+		buf.WriteString("\n```")
+		return buf.String()
+	}
+}
+
+// FuncLocation returns the location of the function in a package containing the function
+func FuncLocation(pkg *packages.Package) func(*doc.Func) string {
+
+	return func(fn *doc.Func) string {
+		var buf = bytes.NewBuffer(nil)
+		file := pkg.Fset.File(fn.Decl.Pos())
+		start_ln := file.Line(fn.Decl.Type.Pos())
+		end_ln := file.Line(fn.Decl.Type.End())
+		buf.WriteString(path.Join(pkg.PkgPath, "blob/main", path.Base(file.Name()), fmt.Sprintf("#L%d-L%d", start_ln, end_ln)))
+
+		return buf.String()
+	}
+}
+
+// FuncSignature returns a function that generates the function signature for a given function in a package
+// This function is provided the template parser as 'signature'
+// Usage:
+// ```go
+// //in a template file
+// {{signature .Func}} // where .Func is a type of *doc.Func
+// ```
+func FuncSignature(pkg *packages.Package) func(*doc.Func) string {
+
+	return func(fn *doc.Func) string {
+		var buf = bytes.NewBuffer(nil)
+
+		buf.WriteString("```go\n")
+		if fn.Decl != nil {
+			format.Node(buf, pkg.Fset, fn.Decl)
+		}
+		buf.WriteString("\n```")
+		return buf.String()
+	}
+}
 func (readme *Readme) Generate() (err error) {
-	for i, pkg := range readme.Pkgs {
-		var readme_file *os.File
-		if readme_file, err = os.Create("./README.md"); err != nil {
-			return
-		}
-		log.Printf("Package %q\n", pkg.Name)
-		log.Println("Go Files:")
-		var tmpl *template.Template
-		if tmpl, err = template.New(pkg.Name).Parse(readme_template); err != nil {
-			return
-		}
-		// var w *bytes.Buffer = bytes.NewBuffer(nil)
+
+	for _, pkg := range readme.RefinedPkgs {
 		package_readme := PackageReadme{
+			P:       pkg,
 			Options: *readme.options,
-			Pkg:     readme.Docs[i],
 		}
-		//readme.Docs[i].Types
-		//readme.Docs[i].Funcs
+		if package_readme.Pkg, err = doc.NewFromFiles(pkg.Fset, pkg.Syntax, pkg.PkgPath); err != nil {
+			return
+		}
+		var readme_file *os.File
+		if pkg.GoFiles == nil || len(pkg.GoFiles) == 0 {
+			continue
+		}
+		var readme_file_path = filepath.Dir(pkg.GoFiles[0])
+		if readme_file, err = os.Create(path.Join(readme_file_path, "README.md")); err != nil { //fmt.Sprintf("./README.%s.md", pkg.Name)
+			return
+		}
+
+		fn_map := template.FuncMap{
+			"example":   ExampleCode(pkg),
+			"signature": FuncSignature(pkg),
+			"location":  FuncLocation(pkg),
+		}
+		var tmpl *template.Template
+		if tmpl, err = template.New(pkg.Name).Funcs(fn_map).Parse(readme_template); err != nil {
+			return
+		}
+
 		if err = tmpl.Execute(readme_file, package_readme); err != nil {
 			return
 		}

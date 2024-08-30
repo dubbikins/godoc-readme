@@ -1,18 +1,26 @@
 # {{.Pkg.Name}}
+<!-- THIS FILE IS GENERATED. DO NOT EDIT! -->
+{{ $pkg := .}}
 
 {{.Pkg.Doc}}
 {{ $num_funs := len .Pkg.Funcs }}{{ if gt $num_funs 0 }}## Functions
 {{ range .Pkg.Funcs }}
-### {{.Name}}
+### [func {{.Name}}](https://{{location .}})
+{{signature .}}
 
 {{.Doc}}
 
-#### Examples
-
+{{ $num_examples := len .Examples }}{{ if gt $num_examples 0 }}#### Examples
 {{ range .Examples }}
 ```go
-{{.}}
+{{example .}}
 ```
-{{end}}
+{{end}}{{end}}{{end}}
+{{ $num_examples := len .Pkg.Examples }}{{ if gt $num_examples 0 }}## Examples
+{{ range .Pkg.Examples }}
 
-{{ end }}{{ end }}
+{{example .}}
+
+{{end}}
+{{end}}
+{{end}}
