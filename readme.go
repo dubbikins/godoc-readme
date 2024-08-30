@@ -1,9 +1,9 @@
 /*
-Auto-Readme is a CLI that generates a README.md file for your go project using comments you already write for godoc!
+Godoc-readme is a CLI that generates a README.md file for your go project using comments you already write for godoc!
 
 Usage:
 
-	auto-readme [flags]
+	godoc-readme [flags]
 
 Flags:
 
@@ -11,9 +11,9 @@ Flags:
 	-r, --recursive   recursively search for go packages in the directory and generate a README.md for each package
 
 > [!Note]
-> Adding a `//go:generate auto-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
+> Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
 */
-package autoreadme
+package godoc_readme
 
 //go:generate go run ./cmd/main.go
 import (

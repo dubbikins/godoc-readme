@@ -1,4 +1,4 @@
-package autoreadme
+package godoc_readme
 
 func ExampleExecute() {
 	Execute()

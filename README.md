@@ -1,4 +1,4 @@
-# autoreadme
+# godoc_readme
 
 Auto-Readme is a CLI that generates a README.md file for your go project using comments you already write for godoc!
 
