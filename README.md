@@ -22,7 +22,7 @@ more details about the package
 
 ## Functions
 
-### [func ExampleCode](https://github.com/dubbikins/godoc-readme/blob/main/readme.go/#L168-L168)
+### [func ExampleCode](./readme.go#L168-L168)
 ```go
 func ExampleCode(pkg *packages.Package) func(*doc.Example) string
 ```
@@ -32,7 +32,7 @@ given a package containing the example code
 
 
 
-### [func Execute](https://github.com/dubbikins/godoc-readme/blob/main/readme.go/#L65-L65)
+### [func Execute](./readme.go#L65-L65)
 ```go
 func Execute(args ...string)
 ```
@@ -42,7 +42,7 @@ Optionally, you can pass in a list of arguments to run the command with
 
 
 
-### [func FuncLocation](https://github.com/dubbikins/godoc-readme/blob/main/readme.go/#L187-L187)
+### [func FuncLocation](./readme.go#L187-L187)
 ```go
 func FuncLocation(pkg *packages.Package) func(*doc.Func) string
 ```
@@ -51,7 +51,7 @@ func FuncLocation(pkg *packages.Package) func(*doc.Func) string
 
 
 
-### [func FuncSignature](https://github.com/dubbikins/godoc-readme/blob/main/readme.go/#L211-L211)
+### [func FuncSignature](./readme.go#L211-L211)
 ```go
 func FuncSignature(pkg *packages.Package) func(*doc.Func) string
 ```

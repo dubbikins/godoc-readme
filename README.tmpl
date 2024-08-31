@@ -5,7 +5,7 @@
 {{.Pkg.Doc}}
 {{ $num_funs := len .Pkg.Funcs }}{{ if gt $num_funs 0 }}## Functions
 {{ range .Pkg.Funcs }}
-### [func {{.Name}}](https://{{location .}})
+### [func {{.Name}}]({{location .}})
 {{signature .}}
 
 > {{.Doc}}

@@ -191,7 +191,7 @@ func FuncLocation(pkg *packages.Package) func(*doc.Func) string {
 		file := pkg.Fset.File(fn.Decl.Pos())
 		start_ln := file.Line(fn.Decl.Pos())
 		end_ln := file.Line(fn.Decl.Pos())
-		buf.WriteString(path.Join(pkg.PkgPath, "blob/main", path.Base(file.Name()), fmt.Sprintf("#L%d-L%d", start_ln, end_ln)))
+		buf.WriteString(fmt.Sprintf("./%s#L%d-L%d", path.Base(file.Name()), start_ln, end_ln))
 
 		return buf.String()
 	}
