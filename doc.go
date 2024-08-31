@@ -12,7 +12,8 @@ Usage:
 
 Flags:
 
-	-h, --help   help for auto-readme
-	-r, --recursive   recursively search for go packages in the directory and generate a README.md for each package
+	-h, --help              help for godoc-readme
+	-r, --recursive         Recursively search for go packages in the directory and generate a README.md for each package (default true)
+	-t, --template string   The template file to use for generating the README.md file
 */
 package godoc_readme

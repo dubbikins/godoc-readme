@@ -37,7 +37,7 @@ func init() {
 
 // The root command for the CLI
 var rootCmd = &cobra.Command{
-	Use:   "godoc-reademe",
+	Use:   "godoc-readme",
 	Short: "Generate README.md file for your go project using comments you already write for godoc",
 	Long:  `Generate README.md file for your go project using comments you already write for godoc`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -57,6 +57,7 @@ var rootCmd = &cobra.Command{
 				os.Exit(1)
 			}
 		}
+		fmt.Println("README.md file generated successfully :tada:")
 	},
 }
 
@@ -168,17 +169,18 @@ type PackageReadme struct {
 func ExampleCode(pkg *packages.Package) func(*doc.Example) string {
 
 	return func(ex *doc.Example) string {
-		var buf = bytes.NewBuffer([]byte(fmt.Sprintf("```go\nfunc Example%s", ex.Name)))
-		if ex.Code != nil {
-			format.Node(buf, pkg.Fset, ex.Code)
-		}
+		var buf = bytes.NewBuffer(nil)
+		buf.WriteString("<details>\n")
+		buf.WriteString(fmt.Sprintf("<summary>Example%s</summary>\n\n", ex.Name))
+		buf.WriteString(fmt.Sprintf("```go\nfunc Example%s", ex.Name))
+		format.Node(buf, pkg.Fset, ex.Code)
 		output_lines := strings.Split(ex.Output, "\n")
 		buf.WriteString("\n // Output:")
 		for _, line := range output_lines {
 			buf.WriteString(fmt.Sprintf("\n // %s", line))
 		}
-
-		buf.WriteString("\n```")
+		buf.WriteString("\n```\n")
+		buf.WriteString("</details>\n")
 		return buf.String()
 	}
 }
@@ -187,6 +189,19 @@ func ExampleCode(pkg *packages.Package) func(*doc.Example) string {
 func FuncLocation(pkg *packages.Package) func(*doc.Func) string {
 
 	return func(fn *doc.Func) string {
+		var buf = bytes.NewBuffer(nil)
+		file := pkg.Fset.File(fn.Decl.Pos())
+		start_ln := file.Line(fn.Decl.Pos())
+		end_ln := file.Line(fn.Decl.Pos())
+		buf.WriteString(fmt.Sprintf("./%s#L%d-L%d", path.Base(file.Name()), start_ln, end_ln))
+
+		return buf.String()
+	}
+}
+
+func TypeLocation(pkg *packages.Package) func(*doc.Type) string {
+
+	return func(fn *doc.Type) string {
 		var buf = bytes.NewBuffer(nil)
 		file := pkg.Fset.File(fn.Decl.Pos())
 		start_ln := file.Line(fn.Decl.Pos())
@@ -222,6 +237,20 @@ func FuncSignature(pkg *packages.Package) func(*doc.Func) string {
 	}
 }
 
+func TypeSignature(pkg *packages.Package) func(*doc.Type) string {
+
+	return func(fn *doc.Type) string {
+		var buf = bytes.NewBuffer(nil)
+
+		buf.WriteString("```go\n")
+		if fn.Decl != nil {
+			format.Node(buf, pkg.Fset, fn.Decl)
+		}
+		buf.WriteString("\n```")
+		return buf.String()
+	}
+}
+
 // Generate generates the README.md file for the packages that are loaded
 // The README.md file is generated in the directory of the package
 // The README.md file is generated using the template file provided or the default template in none is provided
@@ -245,9 +274,11 @@ func (readme *Readme) Generate() (err error) {
 		}
 
 		fn_map := template.FuncMap{
-			"example":   ExampleCode(pkg),
-			"signature": FuncSignature(pkg),
-			"location":  FuncLocation(pkg),
+			"example":        ExampleCode(pkg),
+			"fn_signature":   FuncSignature(pkg),
+			"fn_location":    FuncLocation(pkg),
+			"type_signature": TypeSignature(pkg),
+			"type_location":  TypeLocation(pkg),
 		}
 		var tmpl *template.Template
 		if readme.options.TemplateFile != "" {

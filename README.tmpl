@@ -1,26 +1,44 @@
-# {{.Pkg.Name}}
+# Package `{{.Pkg.Name}}`
 <!-- THIS FILE IS GENERATED. DO NOT EDIT! -->
 {{ $pkg := .}}
 
 {{.Pkg.Doc}}
+
+{{ $len := len .Pkg.Types }}{{ if gt $len 0 }}## Types
+{{ range .Pkg.Types }}
+### [type {{.Name}}]({{type_location .}})
+{{type_signature .}}
+> {{.Doc}}
+{{ range .Examples}}
+{{example .}}
+{{end}}
+{{ $num_funs := len .Funcs }}{{ if gt $num_funs 0 }}#### Functions
+{{ range .Funcs }}
+### [func {{.Name}}]({{fn_location .}})
+{{fn_signature .}}
+{{end}}
+{{end}}
+{{end}}
+{{end}}
+
 {{ $num_funs := len .Pkg.Funcs }}{{ if gt $num_funs 0 }}## Functions
 {{ range .Pkg.Funcs }}
-### [func {{.Name}}]({{location .}})
-{{signature .}}
+### [func {{.Name}}]({{fn_location .}})
+{{fn_signature .}}
 
 > {{.Doc}}
 
 {{ $num_examples := len .Examples }}{{ if gt $num_examples 0 }}#### Examples
 {{ range .Examples }}
-```go
 {{example .}}
-```
 {{end}}{{end}}{{end}}
+
 {{ $num_examples := len .Pkg.Examples }}{{ if gt $num_examples 0 }}## Examples
 {{ range .Pkg.Examples }}
-
 {{example .}}
+{{end}}
+{{end}}
 
-{{end}}
-{{end}}
+
+
 {{end}}
