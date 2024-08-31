@@ -22,46 +22,50 @@ more details about the package
 
 ## Functions
 
-### [func ExampleCode](https://github.com/dubbikins/godoc-readme/blob/main/readme.go/#L135-L135)
+### [func ExampleCode](https://github.com/dubbikins/godoc-readme/blob/main/readme.go/#L168-L168)
 ```go
 func ExampleCode(pkg *packages.Package) func(*doc.Example) string
 ```
 
-ExampleCode returns a function that generates the example code for a given example
+> ExampleCode returns a function that generates the example code for a given example
 given a package containing the example code
 
 
 
-### [func Execute](https://github.com/dubbikins/godoc-readme/blob/main/readme.go/#L41-L41)
+### [func Execute](https://github.com/dubbikins/godoc-readme/blob/main/readme.go/#L65-L65)
 ```go
 func Execute(args ...string)
 ```
 
-Execute runs the root command using the os.Args by default
+> Execute runs the root command using the os.Args by default
 Optionally, you can pass in a list of arguments to run the command with
 
 
 
-### [func FuncLocation](https://github.com/dubbikins/godoc-readme/blob/main/readme.go/#L154-L154)
+### [func FuncLocation](https://github.com/dubbikins/godoc-readme/blob/main/readme.go/#L187-L187)
 ```go
 func FuncLocation(pkg *packages.Package) func(*doc.Func) string
 ```
 
-FuncLocation returns the location of the function in a package containing the function
+> FuncLocation returns the location of the function in a package containing the function
 
 
 
-### [func FuncSignature](https://github.com/dubbikins/godoc-readme/blob/main/readme.go/#L174-L174)
+### [func FuncSignature](https://github.com/dubbikins/godoc-readme/blob/main/readme.go/#L211-L211)
 ```go
 func FuncSignature(pkg *packages.Package) func(*doc.Func) string
 ```
 
-FuncSignature returns a function that generates the function signature for a given function in a package
+> FuncSignature returns a function that generates the function signature for a given function in a package
 This function is provided the template parser as 'signature'
 Usage:
-```go
+```cheetah
 //in a template file
 {{signature .Func}} // where .Func is a type of *doc.Func
+```
+Ex: for this function it would return:
+```go
+func FuncSignature(pkg *packages.Package) func(*doc.Func) string {
 ```
 
 

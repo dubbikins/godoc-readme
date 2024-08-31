@@ -8,7 +8,7 @@
 ### [func {{.Name}}](https://{{location .}})
 {{signature .}}
 
-{{.Doc}}
+> {{.Doc}}
 
 {{ $num_examples := len .Examples }}{{ if gt $num_examples 0 }}#### Examples
 {{ range .Examples }}
