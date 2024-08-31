@@ -1,13 +1,16 @@
 # Package `{{.Pkg.Name}}`
 <!-- THIS FILE IS GENERATED. DO NOT EDIT! -->
 {{ $pkg := .}}
-{{note "package-pre-doc" .Pkg.Notes}}
+{{.Pkg.Notes}}
+{{NOTE "package-pre-doc" .Pkg.Notes}}
 
 {{.Pkg.Doc}}
 
-{{note "package-post-doc" .Pkg.Notes}}
-
-
+{{NOTE "package-post-doc" .Pkg.Notes}}
+{{WARNING "package-post-doc" .Pkg.Notes}}
+{{IMPORTANT "package-post-doc" .Pkg.Notes}}
+{{TIP "package-post-doc" .Pkg.Notes}}
+{{CAUTION "package-post-doc" .Pkg.Notes}}
 {{ $num_consts := len .Pkg.Consts }}{{ if gt $num_consts 0 }}## Constants
 {{ range .Pkg.Consts }}
 {{end}}
@@ -16,7 +19,7 @@
 {{ range .Pkg.Types }}
 ### [type {{.Name}}]({{type_location .}})
 {{type_signature .}}
-{{note .Name $pkg.Pkg.Notes}}
+{{NOTE .Name $pkg.Pkg.Notes}}
 > {{.Doc}}
 {{ range .Examples}}
 {{example .}}

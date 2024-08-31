@@ -16,3 +16,11 @@ Flags:
 package godoc_readme
 
 //NOTE(package-post-doc): Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
+
+//WARNING(package-post-doc): Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
+
+//IMPORTANT(package-post-doc): Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
+
+//TIP(package-post-doc): Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
+
+//CAUTION(package-post-doc): Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.

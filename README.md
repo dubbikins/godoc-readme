@@ -1,6 +1,7 @@
 # Package `godoc_readme`
 <!-- THIS FILE IS GENERATED. DO NOT EDIT! -->
 
+map[CAUTION:[0x1400d2ff3e0] IMPORTANT:[0x1400d2ff380] NOTE:[0x1400d2ff320] TIP:[0x1400d2ff3b0] WARNING:[0x1400d2ff350]]
 
 
 Godoc-readme is a CLI that generates a README.md file for your go project using comments you already write for godoc!
@@ -23,7 +24,17 @@ more details about the package
 >[!NOTE]
 >Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
 
+>[!WARNING]
+>Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
 
+>[!IMPORTANT]
+>Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
+
+>[!TIP]
+>Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
+
+>[!CAUTION]
+>Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
 
 
 ## Types
@@ -147,9 +158,17 @@ func FuncSignature(pkg *packages.Package) func(*doc.Func) string {
 
 
 
-### [func NoteSignature](./readme.go#L258-L258)
+### [func Note](./readme.go#L258-L258)
 ```go
-func NoteSignature(pkg *packages.Package) func(string, map[string][]*doc.Note) string
+func Note(pkg *packages.Package) func(string, map[string][]*doc.Note) string
+```
+
+> 
+
+
+### [func Notes](./readme.go#L283-L283)
+```go
+func Notes(key string) func(pkg *packages.Package) func(name string, notes map[string][]*doc.Note) string
 ```
 
 > 
@@ -163,7 +182,7 @@ func TypeLocation(pkg *packages.Package) func(*doc.Type) string
 > 
 
 
-### [func TypeSignature](./readme.go#L283-L283)
+### [func TypeSignature](./readme.go#L308-L308)
 ```go
 func TypeSignature(pkg *packages.Package) func(*doc.Type) string
 ```

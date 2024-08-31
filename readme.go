@@ -255,7 +255,7 @@ func FuncSignature(pkg *packages.Package) func(*doc.Func) string {
 	}
 }
 
-func NoteSignature(pkg *packages.Package) func(string, map[string][]*doc.Note) string {
+func Note(pkg *packages.Package) func(string, map[string][]*doc.Note) string {
 
 	return func(name string, notes map[string][]*doc.Note) string {
 		_notes, found := notes["NOTE"]
@@ -277,6 +277,31 @@ func NoteSignature(pkg *packages.Package) func(string, map[string][]*doc.Note) s
 		}
 
 		return buf.String()
+	}
+}
+
+func Notes(key string) func(pkg *packages.Package) func(name string, notes map[string][]*doc.Note) string {
+	return func(pkg *packages.Package) func(name string, notes map[string][]*doc.Note) string {
+		return func(name string, notes map[string][]*doc.Note) string {
+			_notes, found := notes[key]
+			if !found {
+				return ""
+			}
+			var buf = bytes.NewBuffer(nil)
+
+			var header_written bool
+			for _, note := range _notes {
+
+				if note.UID == name {
+					if !header_written {
+						buf.WriteString(fmt.Sprintf(">[!%s]\n", key))
+						header_written = true
+					}
+					buf.WriteString(fmt.Sprintf(">%s", note.Body))
+				}
+			}
+			return buf.String()
+		}
 	}
 }
 
@@ -322,7 +347,11 @@ func (readme *Readme) Generate() (err error) {
 			"fn_location":    FuncLocation(pkg),
 			"type_signature": TypeSignature(pkg),
 			"type_location":  TypeLocation(pkg),
-			"note":           NoteSignature(pkg),
+			"NOTE":           Notes("NOTE")(pkg),
+			"WARNING":        Notes("WARNING")(pkg),
+			"IMPORTANT":      Notes("IMPORTANT")(pkg),
+			"CAUTION":        Notes("CAUTION")(pkg),
+			"TIP":            Notes("TIP")(pkg),
 		}
 		var tmpl *template.Template
 		if readme.options.TemplateFile != "" {
