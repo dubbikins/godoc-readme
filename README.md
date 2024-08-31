@@ -2,12 +2,10 @@
 <!-- THIS FILE IS GENERATED. DO NOT EDIT! -->
 
 
+
 Godoc-readme is a CLI that generates a README.md file for your go project using comments you already write for godoc!
 
 In fact, this README.md file was generated using godoc-readme! :open_mouth:
-
-> [!Note]
-> Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
 
 Usage:
 
@@ -22,9 +20,15 @@ Flags:
 more details about the package
 
 
+>[!NOTE]
+>Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
+
+
+
+
 ## Types
 
-### [type PackageReadme](./readme.go#L161-L161)
+### [type PackageReadme](./readme.go#L179-L179)
 ```go
 type PackageReadme struct {
 	Options ReadmeOptions
@@ -32,13 +36,14 @@ type PackageReadme struct {
 	Pkg     *doc.Package
 }
 ```
+
 > PackageReadme is a struct that holds the package, ast and docs of the package
 It's used to pass data to the readme template
 
 
 
 
-### [type Readme](./readme.go#L78-L78)
+### [type Readme](./readme.go#L96-L96)
 ```go
 type Readme struct {
 	RefinedPkgs map[string]*packages.Package
@@ -46,20 +51,35 @@ type Readme struct {
 	// contains filtered or unexported fields
 }
 ```
+
 > Readme is a struct that holds the packages, ast and docs of the package
 And is used to pass data to the readme template
+
+```mermaid
+classDiagram
+	note "From Duck till Zebra"
+    PackageReadme <|-- Duck
+    note for Duck "can fly\ncan swim\ncan dive\ncan help in debugging"
+    PackageReadme <|-- Fish
+    PackageReadme <|-- Zebra
+    PackageReadme : +int age
+    PackageReadme : +String gender
+    PackageReadme: +isMammal()
+    PackageReadme: +mate()
+
+```
 
 
 #### Functions
 
-### [func NewReadme](./readme.go#L107-L107)
+### [func NewReadme](./readme.go#L125-L125)
 ```go
 func NewReadme(opts ...func(*ReadmeOptions)) (readme *Readme, err error)
 ```
 
 
 
-### [type ReadmeOptions](./readme.go#L87-L87)
+### [type ReadmeOptions](./readme.go#L105-L105)
 ```go
 type ReadmeOptions struct {
 	Dir          string `env:"GODOC_README_MODULE_DIR"`
@@ -68,6 +88,7 @@ type ReadmeOptions struct {
 	// contains filtered or unexported fields
 }
 ```
+
 > ReadmeOptions is a struct that holds the options for the Readme struct
 You can set the options via the options functions or by setting the environment variables defined in the `env` struct tag for the Option field
 
@@ -78,7 +99,7 @@ You can set the options via the options functions or by setting the environment 
 
 ## Functions
 
-### [func ExampleCode](./readme.go#L169-L169)
+### [func ExampleCode](./readme.go#L187-L187)
 ```go
 func ExampleCode(pkg *packages.Package) func(*doc.Example) string
 ```
@@ -98,7 +119,7 @@ Optionally, you can pass in a list of arguments to run the command with
 
 
 
-### [func FuncLocation](./readme.go#L189-L189)
+### [func FuncLocation](./readme.go#L207-L207)
 ```go
 func FuncLocation(pkg *packages.Package) func(*doc.Func) string
 ```
@@ -107,7 +128,7 @@ func FuncLocation(pkg *packages.Package) func(*doc.Func) string
 
 
 
-### [func FuncSignature](./readme.go#L226-L226)
+### [func FuncSignature](./readme.go#L244-L244)
 ```go
 func FuncSignature(pkg *packages.Package) func(*doc.Func) string
 ```
@@ -126,7 +147,15 @@ func FuncSignature(pkg *packages.Package) func(*doc.Func) string {
 
 
 
-### [func TypeLocation](./readme.go#L202-L202)
+### [func NoteSignature](./readme.go#L258-L258)
+```go
+func NoteSignature(pkg *packages.Package) func(string, map[string][]*doc.Note) string
+```
+
+> 
+
+
+### [func TypeLocation](./readme.go#L220-L220)
 ```go
 func TypeLocation(pkg *packages.Package) func(*doc.Type) string
 ```
@@ -134,7 +163,7 @@ func TypeLocation(pkg *packages.Package) func(*doc.Type) string
 > 
 
 
-### [func TypeSignature](./readme.go#L240-L240)
+### [func TypeSignature](./readme.go#L283-L283)
 ```go
 func TypeSignature(pkg *packages.Package) func(*doc.Type) string
 ```
@@ -199,6 +228,7 @@ func Example_template_file{
  // 
 ```
 </details>
+
 
 
 

@@ -73,8 +73,26 @@ func Execute(args ...string) {
 	}
 }
 
+//Note(PackageReadme): test note
+
 // Readme is a struct that holds the packages, ast and docs of the package
 // And is used to pass data to the readme template
+/*
+```mermaid
+classDiagram
+	note "From Duck till Zebra"
+    PackageReadme <|-- Duck
+    note for Duck "can fly\ncan swim\ncan dive\ncan help in debugging"
+    PackageReadme <|-- Fish
+    PackageReadme <|-- Zebra
+    PackageReadme : +int age
+    PackageReadme : +String gender
+    PackageReadme: +isMammal()
+    PackageReadme: +mate()
+
+```
+
+*/
 type Readme struct {
 	pkgs        []*packages.Package
 	RefinedPkgs map[string]*packages.Package
@@ -237,6 +255,31 @@ func FuncSignature(pkg *packages.Package) func(*doc.Func) string {
 	}
 }
 
+func NoteSignature(pkg *packages.Package) func(string, map[string][]*doc.Note) string {
+
+	return func(name string, notes map[string][]*doc.Note) string {
+		_notes, found := notes["NOTE"]
+		if !found {
+			return ""
+		}
+		var buf = bytes.NewBuffer(nil)
+
+		var header_written bool
+		for _, note := range _notes {
+
+			if note.UID == name {
+				if !header_written {
+					buf.WriteString(">[!NOTE]\n")
+					header_written = true
+				}
+				buf.WriteString(fmt.Sprintf(">%s", note.Body))
+			}
+		}
+
+		return buf.String()
+	}
+}
+
 func TypeSignature(pkg *packages.Package) func(*doc.Type) string {
 
 	return func(fn *doc.Type) string {
@@ -279,6 +322,7 @@ func (readme *Readme) Generate() (err error) {
 			"fn_location":    FuncLocation(pkg),
 			"type_signature": TypeSignature(pkg),
 			"type_location":  TypeLocation(pkg),
+			"note":           NoteSignature(pkg),
 		}
 		var tmpl *template.Template
 		if readme.options.TemplateFile != "" {

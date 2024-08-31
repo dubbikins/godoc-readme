@@ -3,9 +3,6 @@ Godoc-readme is a CLI that generates a README.md file for your go project using 
 
 In fact, this README.md file was generated using godoc-readme! :open_mouth:
 
-> [!Note]
-> Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
-
 Usage:
 
 	godoc-readme [flags]
@@ -17,3 +14,5 @@ Flags:
 	-t, --template string   The template file to use for generating the README.md file
 */
 package godoc_readme
+
+//NOTE(package-post-doc): Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
