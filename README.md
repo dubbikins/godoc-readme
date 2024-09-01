@@ -87,7 +87,7 @@ while single-line alerts are great for adding a note to a specific type, func, m
 ## Types
 
 
-### [type PackageReadme](./readme.go#L177-L177)
+### [type PackageReadme](./readme.go#L179-L179)
 
 > ```go
 >type PackageReadme struct {
@@ -108,7 +108,7 @@ while single-line alerts are great for adding a note to a specific type, func, m
 
 
 
-### [type Readme](./readme.go#L97-L97)
+### [type Readme](./readme.go#L99-L99)
 
 > ```go
 >type Readme struct {
@@ -139,13 +139,16 @@ while single-line alerts are great for adding a note to a specific type, func, m
 >```
 >
 
+>[!NOTE]
+>Because of the simpicity of godoc-readme's templating engine, you can add powerful customizations to your documentation like the class diagram that was created using a code block and the [mermaid.js](https://mermaid.js.org/) library that is supported out of the box with Github markdown. (not all features are supported though.)
+
 
 
 ---
 
 #### Methods
 
-### [method Generate](./readme.go#L189-L189)
+### [method Generate](./readme.go#L191-L191)
 > ```go
 > func (readme *Readme) Generate() (err error)
 > ```
@@ -158,7 +161,7 @@ while single-line alerts are great for adding a note to a specific type, func, m
 
 
 
-### [type ReadmeOptions](./readme.go#L105-L105)
+### [type ReadmeOptions](./readme.go#L107-L107)
 
 > ```go
 >type ReadmeOptions struct {

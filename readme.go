@@ -72,6 +72,8 @@ func Execute(args ...string) {
 	}
 }
 
+//NOTE(Readme): Because of the simpicity of godoc-readme's templating engine, you can add powerful customizations to your documentation like the class diagram that was created using a code block and the [mermaid.js](https://mermaid.js.org/) library that is supported out of the box with Github markdown. (not all features are supported though.)
+
 // Readme is a struct that holds the packages, ast and docs of the package
 // And is used to pass data to the readme template
 /*
