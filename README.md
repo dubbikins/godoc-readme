@@ -1,12 +1,11 @@
+
 # Package `godoc_readme`
 <!-- THIS FILE IS GENERATED. DO NOT EDIT! -->
-
-map[CAUTION:[0x1400d2ff3e0] IMPORTANT:[0x1400d2ff380] NOTE:[0x1400d2ff320] TIP:[0x1400d2ff3b0] WARNING:[0x1400d2ff350]]
-
-
-Godoc-readme is a CLI that generates a README.md file for your go project using comments you already write for godoc!
+Godoc-readme is a CLI that generates a README.md file for your go project using comments you already write!
 
 In fact, this README.md file was generated using godoc-readme! :open_mouth:
+
+godoc-readme is built using the [godoc](https://go.dev/blog/godoc) from the standard library.
 
 Usage:
 
@@ -18,91 +17,164 @@ Flags:
 	-r, --recursive         Recursively search for go packages in the directory and generate a README.md for each package (default true)
 	-t, --template string   The template file to use for generating the README.md file
 
-more details about the package
+> [!TIP]
+> Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
 
+The standard templates provided for godoc-readme render a package's reading in the following format/order:
 
->[!NOTE]
->Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
+1. Package Title (name)
+2. Package Docs
+3. Package Alerts
+4. Package Types (if any)
 
->[!WARNING]
->Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
+	1. Type w/Link to Source
+	2. Type Signature
+	3. Type Doc
+	4. Type Alerts
+	5. Type Methods
+	6. Type Examples
 
->[!IMPORTANT]
->Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
+5. Package Functions (if any)
+	1. Function Name w/Link to Source
+	2. Function Signature
+	3. Function Doc
+	4. Function Alerts
+	5. Function Examples
 
->[!TIP]
->Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
+6. Package Constants (if any)
+	1. Constant Name w/Link to Source
+	2. Constant Doc
+7. Package Variables (if any)
+	1. Variables Name w/Link to Source
+	2. Variables Doc
+8. Package Examples (if any)
+	1. Example Name (dropdown)
+	2. Example Code & Output
 
->[!CAUTION]
->Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
+## Alerts
+
+You can add [Github Markdown Alerts](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts) to your readme by utilizing the notes syntax in your godoc comments.
+Godoc-readme support *in-line* alerts in your _**packages**_ godoc comments OR single-line alerts that "target" a the package or a `Type`, `Func`, `Method`, `Var`, or `Const`. Targeted types, besides a package, cannot have inlined alerts because their doc strings are nested by default, use targets for these types instead.
+If you want to change this behaviour, you can provide your own template for custom rendering logic.
+
+The following alert types are supported:
+
+  - NOTE
+  - WARNING
+  - IMPORTANT
+  - CAUTION
+  - TIP
+
+Syntax:
+
+	// TYPE(target): text
+
+	Where `type` is one of the supported alert types and `target` is the name of the *package* or an exported *Type, Func, Method, Var, or Const in the package* that you want to target with the note.
+	A single-line "targeted" Note will appear after the target's doc string section in the README.md file while in-line notes will appear in-line of the doc string.
+	Targeted notes must be on a single line and must begin with a space.
+
+> [!WARNING]
+> An in-line alert cannot have whitespace before it's declaration or it will be rendered as plain doc string text while a targeted alert must have one space before it's declaration.
+
+> [!TIP]
+> In-line alerts are great for enhancing your documentaion in large godoc comments that you want to control the placement of the alert
+while single-line alerts are great for adding a note to a specific type, func, method, var, or const in your package. Since a single-line alert doesn't have to be collocated with the target, you can add targeted alerts from anywhere in your package.
+
+##
+
 
 
 ## Types
 
-### [type PackageReadme](./readme.go#L179-L179)
-```go
-type PackageReadme struct {
-	Options ReadmeOptions
-	P       *packages.Package
-	Pkg     *doc.Package
-}
-```
 
-> PackageReadme is a struct that holds the package, ast and docs of the package
-It's used to pass data to the readme template
+### [type PackageReadme](./readme.go#L177-L177)
 
-
-
-
-### [type Readme](./readme.go#L96-L96)
-```go
-type Readme struct {
-	RefinedPkgs map[string]*packages.Package
-	Docs        []*doc.Package
-	// contains filtered or unexported fields
-}
-```
-
-> Readme is a struct that holds the packages, ast and docs of the package
-And is used to pass data to the readme template
-
-```mermaid
-classDiagram
-	note "From Duck till Zebra"
-    PackageReadme <|-- Duck
-    note for Duck "can fly\ncan swim\ncan dive\ncan help in debugging"
-    PackageReadme <|-- Fish
-    PackageReadme <|-- Zebra
-    PackageReadme : +int age
-    PackageReadme : +String gender
-    PackageReadme: +isMammal()
-    PackageReadme: +mate()
-
-```
+> ```go
+>type PackageReadme struct {
+>	Options ReadmeOptions
+>	Pkg     *packages.Package
+>	Doc     *doc.Package
+>}
+> ```
+>PackageReadme is a struct that holds the package, ast and docs of the package
+>It's used to pass data to the readme template
+>
 
 
-#### Functions
 
-### [func NewReadme](./readme.go#L125-L125)
-```go
-func NewReadme(opts ...func(*ReadmeOptions)) (readme *Readme, err error)
-```
+---
+
+
+
+
+
+### [type Readme](./readme.go#L97-L97)
+
+> ```go
+>type Readme struct {
+>	Pkgs map[string]*packages.Package
+>	// contains filtered or unexported fields
+>}
+> ```
+>Readme is a struct that holds the packages, ast and docs of the package
+>And is used to pass data to the readme template
+>
+>```mermaid
+>classDiagram
+>	class Readme
+>	Readme : +map[string]*packages.Package Pkgs
+>    Readme : -[]*packages.Package pkgs
+>	Readme : -ReadmeOptions options
+>	Readme : +Generate() error
+>	Readme --> ReadmeOptions
+>	Readme --> PackageReadme
+>	class ReadmeOptions
+>	ReadmeOptions : -string Dir
+>	ReadmeOptions : -string DirPattern
+>	ReadmeOptions : -string TemplateFile
+>	class PackageReadme
+>	PackageReadme : +ReadmeOptions Options
+>	PackageReadme : +packages.Package Pkg
+>	PackageReadme : +doc.Package Doc
+>```
+>
+
+
+
+---
+
+#### Methods
+
+### [method Generate](./readme.go#L189-L189)
+> ```go
+> func (readme *Readme) Generate() (err error)
+> ```
+>Generate creates the README.md file for the packages that are registered with a `Readme`
+>
+>The README is generated in the directory of the package using the template file provided or the default template in none is provided.
+>The template functions that are made available to the template arg defined in the [`template_functions` package](./template_functions/README.go)
+>
+
 
 
 
 ### [type ReadmeOptions](./readme.go#L105-L105)
-```go
-type ReadmeOptions struct {
-	Dir          string `env:"GODOC_README_MODULE_DIR"`
-	DirPattern   string `env:"GODOC_README_MODULE_DIR_PATTERN" default:"./..."`
-	TemplateFile string `env:"GODOC_README_TEMPLATE_FILE"`
-	// contains filtered or unexported fields
-}
-```
 
-> ReadmeOptions is a struct that holds the options for the Readme struct
-You can set the options via the options functions or by setting the environment variables defined in the `env` struct tag for the Option field
+> ```go
+>type ReadmeOptions struct {
+>	Dir          string `env:"GODOC_README_MODULE_DIR"`
+>	DirPattern   string `env:"GODOC_README_MODULE_DIR_PATTERN" default:"./..."`
+>	TemplateFile string `env:"GODOC_README_TEMPLATE_FILE"`
+>	// contains filtered or unexported fields
+>}
+> ```
+>ReadmeOptions is a struct that holds the options for the Readme struct
+>You can set the options via the options functions or by setting the environment variables defined in the `env` struct tag for the Option field
+>
 
+
+
+---
 
 
 
@@ -110,84 +182,23 @@ You can set the options via the options functions or by setting the environment 
 
 ## Functions
 
-### [func ExampleCode](./readme.go#L187-L187)
-```go
-func ExampleCode(pkg *packages.Package) func(*doc.Example) string
-```
-
-> ExampleCode returns a function that generates the example code for a given example
-given a package containing the example code
 
 
+### [func Execute](./readme.go#L65-L65)
+> ```go
+    >func Execute(args ...string)
+> ``` 
+>Execute runs the root command using the os.Args by default
+>Optionally, you can pass in a list of arguments to run the command with
+>
 
-### [func Execute](./readme.go#L66-L66)
-```go
-func Execute(args ...string)
-```
 
-> Execute runs the root command using the os.Args by default
-Optionally, you can pass in a list of arguments to run the command with
+---
 
 
 
-### [func FuncLocation](./readme.go#L207-L207)
-```go
-func FuncLocation(pkg *packages.Package) func(*doc.Func) string
-```
-
-> FuncLocation returns the location of the function in a package containing the function
 
 
-
-### [func FuncSignature](./readme.go#L244-L244)
-```go
-func FuncSignature(pkg *packages.Package) func(*doc.Func) string
-```
-
-> FuncSignature returns a function that generates the function signature for a given function in a package
-This function is provided the template parser as 'signature'
-Usage:
-```cheetah
-//in a template file
-{{signature .Func}} // where .Func is a type of *doc.Func
-```
-Ex: for this function it would return:
-```go
-func FuncSignature(pkg *packages.Package) func(*doc.Func) string {
-```
-
-
-
-### [func Note](./readme.go#L258-L258)
-```go
-func Note(pkg *packages.Package) func(string, map[string][]*doc.Note) string
-```
-
-> 
-
-
-### [func Notes](./readme.go#L283-L283)
-```go
-func Notes(key string) func(pkg *packages.Package) func(name string, notes map[string][]*doc.Note) string
-```
-
-> 
-
-
-### [func TypeLocation](./readme.go#L220-L220)
-```go
-func TypeLocation(pkg *packages.Package) func(*doc.Type) string
-```
-
-> 
-
-
-### [func TypeSignature](./readme.go#L308-L308)
-```go
-func TypeSignature(pkg *packages.Package) func(*doc.Type) string
-```
-
-> 
 
 
 
@@ -225,7 +236,7 @@ func Example_help_command{
  //   godoc-readme [flags]
  // 
  // Flags:
- //   -h, --help   help for godoc-readme
+ //   -h, --help   dhelp for godoc-readme
  //   -r, --recursive   Recursively search for go packages in the directory and generate a README.md for each package (default true)
  //   -t, --template string   The template file to use for generating the README.md file
  // 
@@ -247,9 +258,6 @@ func Example_template_file{
  // 
 ```
 </details>
-
-
-
 
 
 

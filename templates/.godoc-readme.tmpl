@@ -1,0 +1,10 @@
+{{define ".godoc-readme.tmpl"}}
+# Package `{{.Doc.Name}}`
+<!-- THIS FILE IS GENERATED. DO NOT EDIT! -->
+{{doc .Doc.Doc}}
+{{ Alert .Doc.Name }}
+{{ template ".Types.tmpl" . }}
+{{ template ".Funcs.tmpl" . }}
+{{ template ".Constants.tmpl" . }}
+{{ template ".Examples.tmpl" . }}
+{{end}}

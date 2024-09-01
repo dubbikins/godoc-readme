@@ -1,0 +1,5 @@
+{{define ".Types.tmpl"}}
+{{ $len := len .Doc.Types }}{{ if gt $len 0 }}## Types
+{{ range .Doc.Types }}
+{{ template ".Type.tmpl" . }}
+{{end}}{{end}}{{end}}

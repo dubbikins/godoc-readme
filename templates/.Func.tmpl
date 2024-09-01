@@ -1,0 +1,14 @@
+{{ define ".Func.tmpl"}}
+### {{link (printf "func %s" .Name) .Decl}}
+> {{code "go"}}
+    {{section (fmt .Decl) 1}}
+> {{code}} 
+{{section .Doc 1}}
+{{Alert .Name}}
+{{ $num_examples := len .Examples }}{{ if gt $num_examples 0 }}#### Examples
+{{ range .Examples }}
+{{example .}}
+{{end}}
+{{end}}
+---
+{{end}}

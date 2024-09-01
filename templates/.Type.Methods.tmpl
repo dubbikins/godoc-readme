@@ -1,0 +1,9 @@
+{{define ".Type.Methods.tmpl"}}
+{{ $len := len .Methods }}{{ if gt $len 0 }}#### Methods
+{{ range .Methods }}
+### {{link (printf "method %s" .Name) .Decl}}
+> {{code "go"}}
+> {{fmt .Decl}}
+> {{code}}
+{{section .Doc 1}}
+{{end}}{{end}}{{end}}
