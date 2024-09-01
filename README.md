@@ -20,37 +20,6 @@ Flags:
 > [!TIP]
 > Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
 
-The standard templates provided for godoc-readme render a package's reading in the following format/order:
-
-1. Package Title (name)
-2. Package Docs
-3. Package Alerts
-4. Package Types (if any)
-
-	1. Type w/Link to Source
-	2. Type Signature
-	3. Type Doc
-	4. Type Alerts
-	5. Type Methods
-	6. Type Examples
-
-5. Package Functions (if any)
-	1. Function Name w/Link to Source
-	2. Function Signature
-	3. Function Doc
-	4. Function Alerts
-	5. Function Examples
-
-6. Package Constants (if any)
-	1. Constant Name w/Link to Source
-	2. Constant Doc
-7. Package Variables (if any)
-	1. Variables Name w/Link to Source
-	2. Variables Doc
-8. Package Examples (if any)
-	1. Example Name (dropdown)
-	2. Example Code & Output
-
 ## Alerts
 
 You can add [Github Markdown Alerts](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts) to your readme by utilizing the notes syntax in your godoc comments.
