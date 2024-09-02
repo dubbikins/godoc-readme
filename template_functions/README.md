@@ -10,8 +10,8 @@ You can utilize these functions in your own custom templates to generate documen
 
 
 
-
-## Functions### [func Alert](./alert.go#L25-L25)
+## Functions
+### [func Alert](./alert.go#L25-L25)
 
 >```go
 >func Alert(pkg *packages.Package, notes map[string][]*doc.Note) func(string) string

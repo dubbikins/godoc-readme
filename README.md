@@ -151,8 +151,8 @@ while single-line alerts are great for adding a note to a specific type, func, m
 
 
 
-
-## Functions### [func Execute](./readme.go#L65-L65)
+## Functions
+### [func Execute](./readme.go#L65-L65)
 
 >```go
 >func Execute(args ...string)
