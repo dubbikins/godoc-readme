@@ -1,6 +1,8 @@
 /*
 Godoc-readme is a CLI that generates a README.md file for your go project using comments you already write!
 
+![Static Badge](https://img.shields.io/badge/build-passing-brightgreen)
+
 In fact, this README.md file was generated using godoc-readme! :open_mouth:
 
 godoc-readme is built using the [godoc](https://go.dev/blog/godoc) from the standard library.
@@ -16,9 +18,6 @@ Flags:
 	-t, --template string   The template file to use for generating the README.md file
 
 TIP(godoc_readme): Adding a `//go:generate godoc-readme` directive will generate a README.md file for your package when the `go generate` command is run.
-
-
-
 
 Markdown Text Styling
 
@@ -37,6 +36,7 @@ Supported Github Markdown Features:
 
 - [x] Headings
 - [x] Alerts
+- [x] Badges
 - [x] Lists
 	- [x] Nested Lists
 - [x] Task Lists 😉
