@@ -18,7 +18,7 @@ Flags:
 Installing:
 
 ```shell
-go install github.com/dubbikins/godoc-readme
+go install github.com/dubbikins/godoc-readme/godoc-readme
 ```
 
 ---
