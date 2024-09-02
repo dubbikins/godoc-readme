@@ -30,7 +30,8 @@ Markdown Text Styling
 | Bold and nested italic | `** **` with `_ _` | `**This text is _extremely_ important**` | **This text is _extremely_ important** |
 | All bold and italic | `*** ***` | `***All this text is important***` | ***All this text is important*** |
 | Subscript | `<sub> </sub>` | `This is a <sub>subscript</sub> text` | This is a <sub>subscript</sub> text |
-| Superscript | `<sup> </sup> | `This is a <sup>superscript</sup> text` | This is a <sup>superscript</sup> text |
+| Superscript | `<sup> </sup>` | `This is a <sup>superscript</sup> text` | This is a <sup>superscript</sup> text |
+| Comments | `<!-- -->` | `<!-- This content will not appear in the rendered Markdown -->` | (Nothing Gets Renders ;)) |
 
 Supported Github Markdown Features:
 
@@ -42,8 +43,15 @@ Supported Github Markdown Features:
 - [x] Images
 - [x] Links
 - [x] Tables
-- [x] Color Mode i.e. `#ffffff`
 - [x] Code Blocks
+- [x] Footnotes[^1]
+	- [x] Multiline Footnotes[^2]
+- [ ] Color Model
+
+<!-- Examples for footnotes-->`
+[^1]: A Footnote Example.
+[^2]: To add line breaks within a footnote, prefix new lines with 2 spaces.
+  This is a second line.
 
 ## Alerts
 
