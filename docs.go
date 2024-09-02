@@ -15,7 +15,7 @@ Flags:
 	-r, --recursive         Recursively search for go packages in the directory and generate a README.md for each package (default true)
 	-t, --template string   The template file to use for generating the README.md file
 
-TIP(godoc_readme): Adding a `//go:generate godoc-readme directive` to your go file will generate a README.md file for your package when the `go generate` command is run.
+TIP(godoc_readme): Adding a `//go:generate godoc-readme` directive will generate a README.md file for your package when the `go generate` command is run.
 
 
 ## Alerts
