@@ -8,5 +8,5 @@ Package mermaid_examples illustrates the various mermaid charts that you can add
 
 ## File Names
 
-- ./examples/mermaid/docs.go
+- [./docs.go](./docs.go)
 

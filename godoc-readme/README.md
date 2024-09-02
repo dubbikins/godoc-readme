@@ -16,7 +16,7 @@
 
 ## File Names
 
-- ./godoc-readme/main.go
+- [./main.go](./main.go)
 
 ## Imports
 

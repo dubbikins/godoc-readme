@@ -160,7 +160,7 @@ You can utilize these functions in your own custom templates to generate documen
 >Usage: `{{ DocString .Doc }}` where `.Doc` is a string containing godoc notes for a PACKAGE
 
 ---
-## [func RelativeFilename](./filenames.go#L11-L19)
+## [func RelativeFilename](./filenames.go#L10-L15)
 
 >```go
 >func RelativeFilename(pkg *packages.Package) func(abs string) (relative string)
@@ -196,15 +196,15 @@ You can utilize these functions in your own custom templates to generate documen
 
 ## File Names
 
-- ./template_functions/alert.go
-- ./template_functions/code.go
-- ./template_functions/decl.go
-- ./template_functions/doc.go
-- ./template_functions/example.go
-- ./template_functions/filenames.go
-- ./template_functions/format.go
-- ./template_functions/link.go
-- ./template_functions/section.go
+- [./alert.go](./alert.go)
+- [./code.go](./code.go)
+- [./decl.go](./decl.go)
+- [./doc.go](./doc.go)
+- [./example.go](./example.go)
+- [./filenames.go](./filenames.go)
+- [./format.go](./format.go)
+- [./link.go](./link.go)
+- [./section.go](./section.go)
 
 ## Imports
 
@@ -215,7 +215,6 @@ You can utilize these functions in your own custom templates to generate documen
 - go/format
 - go/token
 - golang.org/x/tools/go/packages
-- os
 - path
 - regexp
 - strings

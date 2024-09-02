@@ -1,4 +1,4 @@
 {{ define ".Filenames.tmpl" }}{{ $len := len . }}{{ if gt $len 0 }}## File Names{{end}}
 
-{{ range . }}- {{ relative_path .}}
+{{ range . }}- [{{ relative_path .}}]({{ relative_path .}})
 {{end}}{{end}}
