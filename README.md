@@ -120,7 +120,7 @@ while single-line alerts are great for adding a note to a specific type, func, m
 
 # Types
 
-## [type PackageReadme](./readme.go#L196-L196)
+## [type PackageReadme](./readme.go#L196-L200)
 
 >```go
 >type PackageReadme struct {
@@ -134,7 +134,7 @@ while single-line alerts are great for adding a note to a specific type, func, m
 
 --- 
 
-## [type Readme](./readme.go#L102-L102)
+## [type Readme](./readme.go#L102-L106)
 
 >```go
 >type Readme struct {
@@ -172,7 +172,7 @@ while single-line alerts are great for adding a note to a specific type, func, m
 
 ### Methods
 
-### [method Generate](./readme.go#L222-L222)
+### [method Generate](./readme.go#L222-L291)
 
 >```go
 >func (readme *Readme) Generate() (err error)
@@ -223,7 +223,7 @@ func ExampleReadme_Generate{
 
 --- 
 
-## [type ReadmeOptions](./readme.go#L110-L110)
+## [type ReadmeOptions](./readme.go#L110-L117)
 
 >```go
 >type ReadmeOptions struct {
@@ -241,7 +241,7 @@ func ExampleReadme_Generate{
 ---
 # Functions
 
-## [func Execute](./readme.go#L68-L68)
+## [func Execute](./readme.go#L68-L76)
 
 >```go
 >func Execute(args ...string)
@@ -250,7 +250,7 @@ func ExampleReadme_Generate{
 >Optionally, you can pass in a list of arguments to run the command with
 
 ---
-## [func FormatMarkdown](./readme.go#L184-L184)
+## [func FormatMarkdown](./readme.go#L184-L192)
 
 >```go
 >func FormatMarkdown(md []byte) []byte
@@ -261,7 +261,7 @@ func ExampleReadme_Generate{
 >3. Replace multiple `\n`(3+) with a single `\n`
 
 ---
-## [func init](./readme.go#L34-L34)
+## [func init](./readme.go#L34-L38)
 
 >```go
 >func init()

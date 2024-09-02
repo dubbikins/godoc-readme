@@ -16,7 +16,7 @@ func Link(pkg *packages.Package) func(string, ast.Node) string {
 		var buf = bytes.NewBuffer(nil)
 		file := pkg.Fset.File(node.Pos())
 		start_ln := file.Line(node.Pos())
-		end_ln := file.Line(node.Pos())
+		end_ln := file.Line(node.End())
 		buf.WriteString(fmt.Sprintf("[%s](./%s#L%d-L%d)", title, path.Base(file.Name()), start_ln, end_ln))
 
 		return buf.String()

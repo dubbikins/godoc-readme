@@ -14,7 +14,7 @@
 
 # Functions
 
-## [func main](./main.go#L5-L5)
+## [func main](./main.go#L5-L7)
 
 >```go
 >func main()

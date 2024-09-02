@@ -39,7 +39,7 @@ You can utilize these functions in your own custom templates to generate documen
 
 # Types
 
-## [type Target](./decl.go#L27-L27)
+## [type Target](./decl.go#L27-L30)
 
 >```go
 >type Target struct {
@@ -52,13 +52,13 @@ You can utilize these functions in your own custom templates to generate documen
 
 ### Methods
 
-### [method End](./decl.go#L34-L34)
+### [method End](./decl.go#L34-L36)
 
 >```go
 >func (t *Target) End() token.Pos
 >```
 
-### [method Pos](./decl.go#L31-L31)
+### [method Pos](./decl.go#L31-L33)
 
 >```go
 >func (t *Target) Pos() token.Pos
@@ -68,7 +68,7 @@ You can utilize these functions in your own custom templates to generate documen
 ---
 # Functions
 
-## [func Alert](./alert.go#L24-L24)
+## [func Alert](./alert.go#L24-L70)
 
 >```go
 >func Alert(pkg *packages.Package, notes map[string][]*doc.Note) func(string) string
@@ -93,7 +93,7 @@ You can utilize these functions in your own custom templates to generate documen
 >Use this alert to provide helpful tips to users
 
 ---
-## [func CodeBlock](./code.go#L38-L38)
+## [func CodeBlock](./code.go#L38-L46)
 
 >```go
 >func CodeBlock(pkg *packages.Package) func(lang ...string) string
@@ -127,7 +127,7 @@ You can utilize these functions in your own custom templates to generate documen
 >```
 
 ---
-## [func DocString](./format.go#L38-L38)
+## [func DocString](./format.go#L38-L51)
 
 >```go
 >func DocString(doc string) string
@@ -137,7 +137,7 @@ You can utilize these functions in your own custom templates to generate documen
 >Targets types doc strings are nested by default and an alert will not be rendered correctly if they remain nested. If you are using the `DocString` function in a custom template setup, make sure you render the target's types without nesting to display the alerts correctly.
 
 ---
-## [func ExampleCode](./example.go#L15-L15)
+## [func ExampleCode](./example.go#L15-L32)
 
 >```go
 >func ExampleCode(pkg *packages.Package) func(*doc.Example) string
@@ -146,7 +146,7 @@ You can utilize these functions in your own custom templates to generate documen
 >You can call this function in a template by using `{{ example . }}` where `.` is a `*doc.Example` instance
 
 ---
-## [func FormatNode](./format.go#L15-L15)
+## [func FormatNode](./format.go#L15-L24)
 
 >```go
 >func FormatNode(pkg *packages.Package) func(ast.Node) string
@@ -155,21 +155,21 @@ You can utilize these functions in your own custom templates to generate documen
 >Can be called in a template by using the `fmt` function `{{ format . }}` where `.` is a type that implements `*ast.Node`
 
 ---
-## [func FuncDeclaration](./decl.go#L38-L38)
+## [func FuncDeclaration](./decl.go#L38-L54)
 
 >```go
 >func FuncDeclaration(pkg *packages.Package) func(*ast.FuncDecl) string
 >```
 
 ---
-## [func GenDeclaration](./decl.go#L14-L14)
+## [func GenDeclaration](./decl.go#L14-L26)
 
 >```go
 >func GenDeclaration(pkg *packages.Package) func(*ast.GenDecl) string
 >```
 
 ---
-## [func Link](./link.go#L14-L14)
+## [func Link](./link.go#L14-L24)
 
 >```go
 >func Link(pkg *packages.Package) func(string, ast.Node) string
@@ -178,7 +178,7 @@ You can utilize these functions in your own custom templates to generate documen
 >Can be called in a template by using the `fmt` function `{{ link . }}` where `.` is a type that implements `*ast.Node`
 
 ---
-## [func PackageDocString](./format.go#L30-L30)
+## [func PackageDocString](./format.go#L30-L36)
 
 >```go
 >func PackageDocString(doc string) string
@@ -187,14 +187,14 @@ You can utilize these functions in your own custom templates to generate documen
 >Usage: `{{ DocString .Doc }}` where `.Doc` is a string containing godoc notes for a PACKAGE
 
 ---
-## [func RelativeFilename](./filenames.go#L8-L8)
+## [func RelativeFilename](./filenames.go#L8-L14)
 
 >```go
 >func RelativeFilename(abs string) (relative string)
 >```
 
 ---
-## [func Section](./section.go#L10-L10)
+## [func Section](./section.go#L10-L22)
 
 >```go
 >func Section(doc string, n int) string
@@ -206,14 +206,14 @@ You can utilize these functions in your own custom templates to generate documen
 >    `Section("This is a section", 1)` returns "> This is a section"
 
 ---
-## [func SpecDeclaration](./decl.go#L56-L56)
+## [func SpecDeclaration](./decl.go#L56-L65)
 
 >```go
 >func SpecDeclaration(pkg *packages.Package) func([]ast.Spec) string
 >```
 
 ---
-## [func TestFormatTabs](./format.go#L53-L53)
+## [func TestFormatTabs](./format.go#L53-L60)
 
 >```go
 >func TestFormatTabs(t *testing.T)
