@@ -18,6 +18,33 @@ Flags:
 TIP(godoc_readme): Adding a `//go:generate godoc-readme` directive will generate a README.md file for your package when the `go generate` command is run.
 
 
+
+
+Markdown Text Styling
+
+| Style | Syntax | Example | Output |
+| ------| ------ | ------- | ------ |
+| Bold | `** **` OR `__ __` | `**This is bold text**` | **This is bold text** |
+|Italic| `* *` OR `_ _` | `_This text is italicized_` | _This text is italicized_ |
+| Strikethrough| `~~ ~~` | `~~This was mistaken text~~` | This was mistaken text |
+| Bold and nested italic | `** **` with `_ _` | `**This text is _extremely_ important**` | **This text is _extremely_ important** |
+| All bold and italic | `*** ***` | `***All this text is important***` | ***All this text is important*** |
+| Subscript | `<sub> </sub>` | `This is a <sub>subscript</sub> text` | This is a <sub>subscript</sub> text |
+| Superscript | `<sup> </sup> | `This is a <sup>superscript</sup> text` | This is a <sup>superscript</sup> text |
+
+Supported Github Markdown Features:
+
+- [x] Headings
+- [x] Alerts
+- [x] Lists
+	- [x] Nested Lists
+- [x] Task Lists 😉
+- [x] Images
+- [x] Links
+- [x] Tables
+- [x] Color Mode i.e. `#ffffff`
+- [x] Code Blocks
+
 ## Alerts
 
 You can add [Github Markdown Alerts](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts) to your readme by utilizing the notes syntax in your godoc comments.

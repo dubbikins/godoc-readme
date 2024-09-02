@@ -7,9 +7,7 @@
 {{section .Doc 1}}
 
 {{Alert .Name }}
-{{ range .Examples}}
-{{example .}}
-{{end}}
+{{ range .Examples}}{{example .}}{{end}}
 ---
 {{ template ".Type.Methods.tmpl" . }}
 {{end}}
