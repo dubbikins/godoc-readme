@@ -1,0 +1,4 @@
+{{ define ".Imports.tmpl" }}{{ $len := len . }}{{ if gt $len 0 }}## Imports{{end}}
+
+{{ range . }}- {{.}}
+{{end}}{{end}}

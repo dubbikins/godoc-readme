@@ -25,8 +25,8 @@ func ExampleCode(pkg *packages.Package) func(*doc.Example) string {
 		for _, line := range output_lines {
 			buf.WriteString(fmt.Sprintf("\n // %s", line))
 		}
-		buf.WriteString("\n```\n")
-		buf.WriteString("</details>\n")
+		buf.WriteString("\n```\n\n") // code blocks should be followed by a blank line
+		buf.WriteString("</details>\n") 
 		return buf.String()
 	}
 }

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"go/doc"
-	"regexp"
 
 	"golang.org/x/tools/go/packages"
 )
@@ -44,7 +43,7 @@ func Alert(pkg *packages.Package, notes map[string][]*doc.Note) func(string) str
 
 		var buf = bytes.NewBuffer(nil)
 		alert_types := []string{"NOTE", "WARNING", "IMPORTANT", "CAUTION", "TIP"}
-		for _, alert_type := range alert_types {
+		for i, alert_type := range alert_types {
 			//Check if notes exist for any of the github markdown alert types
 			alerts, found := package_alerts[key][alert_type]
 			if !found {
@@ -54,6 +53,7 @@ func Alert(pkg *packages.Package, notes map[string][]*doc.Note) func(string) str
 			for _, alert := range alerts {
 				if alert.UID == key {
 					if !header_written {
+						buf.WriteString("\n") // Alerts should always start on a new line
 						buf.WriteString(fmt.Sprintf(">[!%s]\n", alert_type))
 						header_written = true
 					}
@@ -61,20 +61,12 @@ func Alert(pkg *packages.Package, notes map[string][]*doc.Note) func(string) str
 				}
 			}
 			buf.WriteString("\n")
+			if i == len(alert_types)-1 {
+				buf.WriteString("\n") // Alerts should always be followed by a blank line
+			}
 		}
 		return buf.String()
 	}
 }
 
-// CAUTION(DocString): Targets types doc strings are nested by default and an alert will not be rendered correctly if they remain nested. If you are using the `DocString` function in a custom template setup, make sure you render the target's types without nesting to display the alerts correctly.
 
-// DocString returns a copy of *doc* with godoc notes replaced with github markdown notes
-// Usage: `{{ DocString .Doc }}` where `.Doc` is a string containing godoc notes for a PACKAGE
-func DocString(doc string) string {
-
-	var pattern = regexp.MustCompile(`(?m:^(NOTE|WARNING|IMPORTANT|CAUTION|TIP)\(([a-zA-Z][a-zA-Z0-9_]*)\):(.*)$)`)
-	var replace = `> [!$1]
->$3`
-	return pattern.ReplaceAllString(doc, replace)
-
-}

@@ -1,9 +1,9 @@
 {{define ".Type.Methods.tmpl"}}
-{{ $len := len .Methods }}{{ if gt $len 0 }}#### Methods
+{{ $len := len .Methods }}{{ if gt $len 0 }}---
+
+### Methods
+
 {{ range .Methods }}
 ### {{link (printf "method %s" .Name) .Decl}}
-> {{code "go"}}
-> {{fmt .Decl}}
-> {{code}}
-{{section .Doc 1}}
-{{end}}{{end}}{{end}}
+
+{{section (fn_decl .Decl) 1}}{{section .Doc 1}}{{alert .Name }}{{ range .Examples}}{{example .}}{{end}}{{end}}{{end}}{{end}}

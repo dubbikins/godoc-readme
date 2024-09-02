@@ -3,6 +3,7 @@ package godoc_readme
 import (
 	"fmt"
 	"os"
+	"testing"
 )
 
 func Example_help_command() {
@@ -34,10 +35,60 @@ func Example() {
 	//
 	// README.md file generated successfully :tada:
 }
+	 
 
+
+func TestFormatMarkdown(t *testing.T) {
+	have := FormatMarkdown([]byte("\n\n"))
+	want := "\n\n"
+	if string(have) != want {
+		t.Errorf("have %q, want %q", have, want)
+	}
+
+	have = FormatMarkdown([]byte("\n  \t \n"))
+	want = "\n\n"
+	if string(have) != want {
+		t.Errorf("have %q, want %q", have, want)
+	}
+
+	have = FormatMarkdown([]byte("\n  \t \n\n"))
+	want = "\n\n"
+	if string(have) != want {
+		t.Errorf("have %q, want %q", have, want)
+	}
+
+	have = FormatMarkdown([]byte("\n\n\n"))
+	want = "\n\n"
+	if string(have) != want {
+		t.Errorf("have %q, want %q", have, want)
+	}
+
+	have = FormatMarkdown([]byte("\n\n\n\n\n\n\n\n\n\t    \n\n"))
+	want = "\n\n"
+	if string(have) != want {
+		t.Errorf("have %q, want %q", have, want)
+	}
+
+	have = FormatMarkdown([]byte("\t\t"))
+	want = "        "
+	if string(have) != want {
+		t.Errorf("have %q, want %q", have, want)
+	}
+	have = FormatMarkdown([]byte(`---
+
+
+### [type Readme](./readme.go#L102-L102)`))
+	want = `---
+
+### [type Readme](./readme.go#L102-L102)`
+	if string(have) != want {
+		t.Errorf("have %q, want %q", have, want)
+	}
+
+}
 func ExampleReadme_Generate() {
 	readme, err := NewReadme(func(ro *ReadmeOptions) {
-		ro.Dir = "example/nested"
+		ro.Dir = "./examples/mermaid"
 	})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)

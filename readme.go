@@ -1,13 +1,16 @@
 package godoc_readme
 
 import (
+	"bytes"
 	"embed"
 	"fmt"
 	"go/doc"
 	"io"
+	"log/slog"
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"text/template"
 
@@ -26,7 +29,7 @@ var recursive bool = true
 var template_filename string
 var template_file *os.File
 
-//go:generate go run ./cmd/main.go
+//go:generate go run ./godoc-readme/main.go
 
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&recursive, "recursive", "r", true, "Recursively search for go packages in the directory and generate a README.md for each package")
@@ -56,7 +59,7 @@ var rootCmd = &cobra.Command{
 				os.Exit(1)
 			}
 		}
-		fmt.Println("README.md file generated successfully :tada:")
+		
 	},
 }
 
@@ -67,7 +70,7 @@ func Execute(args ...string) {
 		rootCmd.SetArgs(args)
 	}
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		slog.Error(err.Error())
 		os.Exit(1)
 	}
 }
@@ -105,10 +108,12 @@ type Readme struct {
 // ReadmeOptions is a struct that holds the options for the Readme struct
 // You can set the options via the options functions or by setting the environment variables defined in the `env` struct tag for the Option field
 type ReadmeOptions struct {
-	Dir               string `env:"GODOC_README_MODULE_DIR"`
-	DirPattern        string `env:"GODOC_README_MODULE_DIR_PATTERN" default:"./..."`
-	TemplateFile      string `env:"GODOC_README_TEMPLATE_FILE"`
-	package_load_mode packages.LoadMode
+
+	Dir				   string`env:"GODOC_README_MODULE_DIR"`
+	DirPattern         string `env:"GODOC_README_MODULE_DIR_PATTERN" default:"./..."`
+	TemplateFile       string `env:"GODOC_README_TEMPLATE_FILE"`
+	Format             func([]byte) []byte
+	package_load_mode  packages.LoadMode
 }
 
 // NewReadme creates a new Readme struct that holds the packages, ast and docs of the package
@@ -128,6 +133,7 @@ func NewReadme(opts ...func(*ReadmeOptions)) (readme *Readme, err error) {
 	readme = &Readme{
 		options: &ReadmeOptions{
 			package_load_mode: packages.NeedName | packages.NeedFiles | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypes | packages.NeedEmbedFiles | packages.NeedCompiledGoFiles | packages.NeedImports | packages.NeedTypesInfo | packages.NeedTypesSizes | packages.NeedDeps,
+			Format: FormatMarkdown,
 		},
 		Pkgs: map[string]*packages.Package{},
 	}
@@ -137,14 +143,11 @@ func NewReadme(opts ...func(*ReadmeOptions)) (readme *Readme, err error) {
 	for _, opt := range opts {
 		opt(readme.options)
 	}
-
-	cfg := &packages.Config{
+	if readme.pkgs, err = packages.Load(&packages.Config{
 		Mode:  readme.options.package_load_mode,
 		Dir:   readme.options.Dir,
 		Tests: true,
-	}
-	readme.pkgs, err = packages.Load(cfg, readme.options.DirPattern)
-	if err != nil {
+	}, readme.options.DirPattern); err != nil {
 		return
 	}
 	if packages.PrintErrors(readme.pkgs) > 0 {
@@ -174,6 +177,20 @@ func NewReadme(opts ...func(*ReadmeOptions)) (readme *Readme, err error) {
 	return
 }
 
+// FormatMarkdown applies the following formatting to the markdown:
+// 1. Replace all hard-tabs(`\t`) with 4 single space characters (`    `)
+// 2. Remove leading whitespace from blank lines
+// 3. Replace multiple `\n`(3+) with a single `\n`
+func FormatMarkdown(md []byte) []byte {
+	md = bytes.ReplaceAll(md, []byte("\t"), []byte("    "))
+	var whitespace_blank_line_pattern = regexp.MustCompile(`\n\s*\n`)
+	md = whitespace_blank_line_pattern.ReplaceAll(md, []byte("\n\n")) // Remove leading whitespace from blank lines
+	var multiple_blank_line_patterns = regexp.MustCompile(`\n\n+\n`)
+	md = multiple_blank_line_patterns.ReplaceAll(md, []byte("\n\n"))
+	
+	return md
+}
+
 // PackageReadme is a struct that holds the package, ast and docs of the package
 // It's used to pass data to the readme template
 type PackageReadme struct {
@@ -186,7 +203,21 @@ type PackageReadme struct {
 Generate creates the README.md file for the packages that are registered with a `Readme`
 
 The README is generated in the directory of the package using the template file provided or the default template in none is provided.
-The template functions that are made available to the template arg defined in the [`template_functions` package](./template_functions)
+The following template functions available in the template engine are defined in the [`template_functions` package](./template_functions):
+| Function | Description | Example | Output |
+| --- | --- | --- | --- |
+| `example` | Renders a markdown representation of a `[doc.Example]` instance | `{{ example . }}` where `.` is a [doc.Example]| renders [an example like](/#Examples) |
+| `code` | Renders the start (or end) of a code block in markdown, optionally specifying the language format of the code block | `{{ code "go" }}fmt.Println("Hello World"){{ code }}` | `` ```go\nfmt.Println("Hello World")\n```\n`` |
+| `fmt` | Renders a formatted string representation of an [ast.Node] | `{{ fmt . }}` | `N/A` |
+| `link` | Renders a markdown link to the location of the [ast.Node] in a package | `{{ link "title" . }}` | `[title](...)` where ... is the relative link to the file ,including line numbers |
+| `alert` | Renders a markdown alert message based on the notes provided in the [doc.Package] | `{{ alert . "title" }}` | renders the alerts with the "title" target |
+| `section` | Renders an indented markdown section header | `{{ section "line 1 text\nline 2 text" 1}}` | `>line 1 text\n>line 2 text` |
+| `doc` | Renders a ***package's*** doc string, including in-line alerts, package ref's, etc | `{{ doc . }}` | `N/A` |
+| `relative_path` | Replaces the pwd the `.` | `{{ relative_path "/abs/path" }}` where `/abs` is the pwd | returns `./path` |
+
+Additionally, the following functions are available in the template engine:
+
+- `base`: [filepath.Base] Returns the base name of a file path
 */
 func (readme *Readme) Generate() (err error) {
 
@@ -195,26 +226,34 @@ func (readme *Readme) Generate() (err error) {
 			Pkg:     pkg,
 			Options: *readme.options,
 		}
-		if package_readme.Doc, err = doc.NewFromFiles(pkg.Fset, pkg.Syntax, pkg.PkgPath); err != nil {
+		if package_readme.Doc, err = doc.NewFromFiles(pkg.Fset, pkg.Syntax, pkg.PkgPath,doc.AllDecls| doc.AllMethods |doc.PreserveAST); err != nil {
 			return
 		}
+		var buf = bytes.NewBuffer(nil)
 		var readme_file *os.File
 		if pkg.GoFiles == nil || len(pkg.GoFiles) == 0 {
 			continue
 		}
 		var readme_file_path = filepath.Dir(pkg.GoFiles[0])
-		if readme_file, err = os.Create(path.Join(readme_file_path, "README.md")); err != nil { //fmt.Sprintf("./README.%s.md", pkg.Name)
+		var file_name = path.Join(readme_file_path, "README.md")
+		if readme_file, err = os.Create(file_name); err != nil { //fmt.Sprintf("./README.%s.md", pkg.Name)
 			return
 		}
 
 		fn_map := template.FuncMap{
-			"example": template_functions.ExampleCode(pkg),
-			"code":    template_functions.CodeBlock(pkg),
-			"fmt":     template_functions.FormatNode(pkg),
-			"link":    template_functions.Link(pkg),
-			"Alert":   template_functions.Alert(pkg, package_readme.Doc.Notes),
-			"section": template_functions.Section,
-			"doc":     template_functions.DocString,
+			"example":       template_functions.ExampleCode(pkg),
+			"code":          template_functions.CodeBlock(pkg),
+			"fmt":           template_functions.FormatNode(pkg),
+			"link":          template_functions.Link(pkg),
+			"alert":         template_functions.Alert(pkg, package_readme.Doc.Notes),
+			"doc":           template_functions.DocString,
+			"gen_decl": 	 template_functions.GenDeclaration(pkg),
+			"spec_decl": 	 template_functions.SpecDeclaration(pkg),
+			"fn_decl": 		 template_functions.FuncDeclaration(pkg),
+			"section":       template_functions.Section,
+			"pkg_doc":       template_functions.PackageDocString,
+			"relative_path": template_functions.RelativeFilename,
+			"base":          filepath.Base,
 		}
 
 		var tmpl *template.Template
@@ -233,14 +272,20 @@ func (readme *Readme) Generate() (err error) {
 				return
 			}
 		} else {
-			if tmpl, err = template.New(".godoc-readme.tmpl").Funcs(fn_map).ParseFS(readme_templates, "templates/*.tmpl"); err != nil {
+			if tmpl, err = template.New("README.tmpl").Funcs(fn_map).ParseFS(readme_templates, "templates/*.tmpl"); err != nil {
 				return
 			}
 		}
-
-		if err = tmpl.Execute(readme_file, package_readme); err != nil {
+		if err = tmpl.Execute(buf, package_readme); err != nil {
 			return
 		}
+		if readme.options.Format == nil {
+			readme.options.Format = FormatMarkdown
+		}
+		if _, err = readme_file.Write(readme.options.Format(buf.Bytes())); err != nil {
+			return
+		}
+		fmt.Printf("[%s] generated successfully :tada:\n",file_name )
 	}
 	return
 }

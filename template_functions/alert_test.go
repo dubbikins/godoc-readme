@@ -31,7 +31,7 @@ func TestXxx(t *testing.T) {
 	// var replace = `>[!$1($2)]\n>$3`
 	// var have = pattern.ReplaceAllString("NOTE(target): This is a note\ntes", replace)
 	var submatches = pattern.FindSubmatch([]byte("NOTE(target): This is a note\ntes"))
-	var expected_count = 8
+	var expected_count = 4
 	if len(submatches) != expected_count {
 		t.Errorf("does not match the expected pattern.%s have %d, want %d", bytes.Join(submatches, []byte(";")), len(submatches), expected_count)
 	}
@@ -39,19 +39,8 @@ func TestXxx(t *testing.T) {
 
 func TestFormatInlineAlerts(t *testing.T) {
 
-	have := DocString(`## Alerts
-
-NOTE(target): this is a note
-
-Next line
-`)
-	want := `## Alerts
-
-> [!NOTE]
-> this is a note
-
-Next line
-`
+	have := PackageDocString("## Alerts\n\nNOTE(target): this is a note\n\nNext line\n")
+	want := "## Alerts\n\n> [!NOTE]\n> this is a note\n\nNext line\n"
 	if have != want {
 		t.Errorf("expected %q but got %q", want, have)
 	}

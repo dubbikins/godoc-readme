@@ -1,13 +1,7 @@
 {{define ".Type.tmpl"}}
-### {{link (printf "type %s" .Name) .Decl}}
+## {{link (printf "type %s" .Name) .Decl}}
 
-> {{code "go"}}
-{{section (fmt .Decl) 1}}
-> {{code}}
-{{section .Doc 1}}
-
-{{Alert .Name }}
-{{ range .Examples}}{{example .}}{{end}}
----
+{{section (gen_decl .Decl) 1}}{{section .Doc 1}}{{alert .Name }}{{ range .Examples}}{{example .}}{{end}}
 {{ template ".Type.Methods.tmpl" . }}
+--- 
 {{end}}
