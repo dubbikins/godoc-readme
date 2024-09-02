@@ -20,7 +20,7 @@ Flags:
 Installing:
 
 ```shell
-go install github.com/dubbikins/godoc-readme
+go install github.com/dubbikins/godoc-readme/godoc-readme
 ```
 
 ---
@@ -166,7 +166,7 @@ while single-line alerts are great for adding a note to a specific type, func, m
 >Generate creates the README.md file for the packages that are registered with a `Readme`
 >
 >The README is generated in the directory of the package using the template file provided or the default template in none is provided.
->The template functions that are made available to the template arg defined in the [`template_functions` package](./template_functions/README.go)
+>The template functions that are made available to the template arg defined in the [`template_functions` package](./template_functions)
 >
 
 
