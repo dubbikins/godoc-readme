@@ -94,30 +94,6 @@ while single-line alerts are great for adding a note to a specific type, func, m
 [^2]: To add line breaks within a footnote, prefix new lines with 2 spaces.
   This is a second line.
 
-## File Names
-
-- ./docs.go
-- ./readme.go
-
-## Imports
-
-- bytes
-- embed
-- fmt
-- github.com/dubbikins/envy
-- github.com/dubbikins/godoc-readme/template_functions
-- github.com/spf13/cobra
-- go/doc
-- golang.org/x/tools/go/packages
-- io
-- log/slog
-- os
-- path
-- path/filepath
-- regexp
-- strings
-- text/template
-
 # Types
 
 ## [type PackageReadme](./readme.go#L196-L200)
@@ -324,3 +300,28 @@ func Example_template_file{
 ```
 
 </details>
+
+## File Names
+
+- ./docs.go
+- ./readme.go
+
+## Imports
+
+- bytes
+- embed
+- fmt
+- github.com/dubbikins/envy
+- github.com/dubbikins/godoc-readme/template_functions
+- github.com/spf13/cobra
+- go/doc
+- golang.org/x/tools/go/packages
+- io
+- log/slog
+- os
+- path
+- path/filepath
+- regexp
+- strings
+- text/template
+

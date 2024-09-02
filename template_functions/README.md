@@ -10,33 +10,6 @@ The functions are used to format the documentation in a way that is easy to read
 
 You can utilize these functions in your own custom templates to generate documentation for your packages with customize formatting/behvior if the standard templates provided by godoc-readme do not meet your needs.
 
-## File Names
-
-- ./template_functions/alert.go
-- ./template_functions/code.go
-- ./template_functions/decl.go
-- ./template_functions/doc.go
-- ./template_functions/example.go
-- ./template_functions/filenames.go
-- ./template_functions/format.go
-- ./template_functions/link.go
-- ./template_functions/section.go
-
-## Imports
-
-- bytes
-- fmt
-- go/ast
-- go/doc
-- go/format
-- go/token
-- golang.org/x/tools/go/packages
-- os
-- path
-- regexp
-- strings
-- testing
-
 # Types
 
 ## [type Target](./decl.go#L27-L30)
@@ -187,10 +160,10 @@ You can utilize these functions in your own custom templates to generate documen
 >Usage: `{{ DocString .Doc }}` where `.Doc` is a string containing godoc notes for a PACKAGE
 
 ---
-## [func RelativeFilename](./filenames.go#L8-L14)
+## [func RelativeFilename](./filenames.go#L11-L19)
 
 >```go
->func RelativeFilename(abs string) (relative string)
+>func RelativeFilename(pkg *packages.Package) func(abs string) (relative string)
 >```
 
 ---
@@ -220,4 +193,31 @@ You can utilize these functions in your own custom templates to generate documen
 >```
 
 ---
+
+## File Names
+
+- ./template_functions/alert.go
+- ./template_functions/code.go
+- ./template_functions/decl.go
+- ./template_functions/doc.go
+- ./template_functions/example.go
+- ./template_functions/filenames.go
+- ./template_functions/format.go
+- ./template_functions/link.go
+- ./template_functions/section.go
+
+## Imports
+
+- bytes
+- fmt
+- go/ast
+- go/doc
+- go/format
+- go/token
+- golang.org/x/tools/go/packages
+- os
+- path
+- regexp
+- strings
+- testing
 

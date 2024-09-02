@@ -252,7 +252,7 @@ func (readme *Readme) Generate() (err error) {
 			"fn_decl": 		 template_functions.FuncDeclaration(pkg),
 			"section":       template_functions.Section,
 			"pkg_doc":       template_functions.PackageDocString,
-			"relative_path": template_functions.RelativeFilename,
+			"relative_path": template_functions.RelativeFilename(pkg),
 			"base":          filepath.Base,
 		}
 
