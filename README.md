@@ -3,8 +3,6 @@
 <!-- THIS FILE IS GENERATED. DO NOT EDIT! -->
 Godoc-readme is a CLI that generates a README.md file for your go project using comments you already write!
 
-![Static Badge](https://img.shields.io/badge/build-passing-brightgreen)
-
 In fact, this README.md file was generated using godoc-readme! :open_mouth:
 
 godoc-readme is built using the [godoc](https://go.dev/blog/godoc) from the standard library.
@@ -18,6 +16,14 @@ Flags:
 	-h, --help              help for godoc-readme
 	-r, --recursive         Recursively search for go packages in the directory and generate a README.md for each package (default true)
 	-t, --template string   The template file to use for generating the README.md file
+
+Installing:
+
+```shell
+go install github.com/dubbikins/godoc-readme
+```
+
+---
 
 > [!TIP]
 > Adding a `//go:generate godoc-readme` directive will generate a README.md file for your package when the `go generate` command is run.
@@ -51,11 +57,6 @@ Supported Github Markdown Features:
 	- [x] Multiline Footnotes[^2]
 - [ ] Color Model
 
-<!-- Examples for footnotes-->`
-[^1]: A Footnote Example.
-[^2]: To add line breaks within a footnote, prefix new lines with 2 spaces.
-  This is a second line.
-
 ## Alerts
 
 You can add [Github Markdown Alerts](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts) to your readme by utilizing the notes syntax in your godoc comments.
@@ -85,7 +86,12 @@ Syntax:
 > In-line alerts are great for enhancing your documentaion in large godoc comments that you want to control the placement of the alert
 while single-line alerts are great for adding a note to a specific type, func, method, var, or const in your package. Since a single-line alert doesn't have to be collocated with the target, you can add targeted alerts from anywhere in your package.
 
-##
+![Static Badge](https://img.shields.io/badge/build-passing-brightgreen)
+
+<!-- Examples for footnotes-->`
+[^1]: A Footnote Example.
+[^2]: To add line breaks within a footnote, prefix new lines with 2 spaces.
+  This is a second line.
 
 
 
