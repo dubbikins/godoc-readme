@@ -160,10 +160,10 @@ You can utilize these functions in your own custom templates to generate documen
 >Usage: `{{ DocString .Doc }}` where `.Doc` is a string containing godoc notes for a PACKAGE
 
 ---
-## [func RelativeFilename](./filenames.go#L10-L15)
+## [func RelativeFilename](./filenames.go#L8-L10)
 
 >```go
->func RelativeFilename(pkg *packages.Package) func(abs string) (relative string)
+>func RelativeFilename(filepath string) (relative string)
 >```
 
 ---
@@ -196,15 +196,15 @@ You can utilize these functions in your own custom templates to generate documen
 
 ## File Names
 
-- [./alert.go](./alert.go)
-- [./code.go](./code.go)
-- [./decl.go](./decl.go)
-- [./doc.go](./doc.go)
-- [./example.go](./example.go)
-- [./filenames.go](./filenames.go)
-- [./format.go](./format.go)
-- [./link.go](./link.go)
-- [./section.go](./section.go)
+- [alert.go](./alert.go)
+- [code.go](./code.go)
+- [decl.go](./decl.go)
+- [doc.go](./doc.go)
+- [example.go](./example.go)
+- [filenames.go](./filenames.go)
+- [format.go](./format.go)
+- [link.go](./link.go)
+- [section.go](./section.go)
 
 ## Imports
 

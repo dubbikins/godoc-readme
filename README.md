@@ -303,8 +303,8 @@ func Example_template_file{
 
 ## File Names
 
-- [./docs.go](./docs.go)
-- [./readme.go](./readme.go)
+- [docs.go](./docs.go)
+- [readme.go](./readme.go)
 
 ## Imports
 

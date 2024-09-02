@@ -16,7 +16,7 @@
 
 ## File Names
 
-- [./main.go](./main.go)
+- [main.go](./main.go)
 
 ## Imports
 
