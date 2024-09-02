@@ -96,7 +96,7 @@ while single-line alerts are great for adding a note to a specific type, func, m
 
 # Types
 
-## [type PackageReadme](./readme.go#L196-L200)
+## [type PackageReadme](./readme.go#L197-L201)
 
 >```go
 >type PackageReadme struct {
@@ -148,7 +148,7 @@ while single-line alerts are great for adding a note to a specific type, func, m
 
 ### Methods
 
-### [method Generate](./readme.go#L222-L291)
+### [method Generate](./readme.go#L223-L294)
 
 >```go
 >func (readme *Readme) Generate() (err error)
@@ -214,6 +214,34 @@ func ExampleReadme_Generate{
 >You can set the options via the options functions or by setting the environment variables defined in the `env` struct tag for the Option field
 
 --- 
+
+## [type RenderFlag](./flags.go#L33-L33)
+
+>```go
+>type RenderFlag uint32
+>```
+> RenderFlags can be used to turn on and off rendering of different sections in the README.md file.
+>
+>The bitmask values are as follows:
+>
+>| 1 | 2 | 3 | 4 | 5 | 6 | 7 | ... | 32 |
+>|---|---|---|---|---|---|---|-----|----|
+>| Types | Funcs | TypeMethods | Vars | Consts | Examples | Alerts | TBD | RenderAll (default) |
+>
+>For example, to render only the types and functions in the README.md file, you would set the 1st and 2nd bits, i.e `0000 0011` or `RenderTypes | RenderFuncs`
+
+---
+
+### Methods
+
+### [method IsSet](./flags.go#L36-L38)
+
+>```go
+>func (f RenderFlag) IsSet(flag RenderFlag) bool
+>```
+>IsSet returns true if the flag is set in the RenderFlags
+
+--- 
 ---
 # Functions
 
@@ -226,7 +254,7 @@ func ExampleReadme_Generate{
 >Optionally, you can pass in a list of arguments to run the command with
 
 ---
-## [func FormatMarkdown](./readme.go#L184-L192)
+## [func FormatMarkdown](./readme.go#L185-L193)
 
 >```go
 >func FormatMarkdown(md []byte) []byte
@@ -244,6 +272,55 @@ func ExampleReadme_Generate{
 >```
 
 ---
+
+## Vars
+```go
+// The readme templates are embedded in the binary so that it can be used as a default template
+// This value can be overridden by providing a template file using the --template flag or the GODOC_README_TEMPLATE_FILE environment variable
+//
+//go:embed templates/*
+var readme_templates embed.FS
+```
+
+```go
+var recursive bool = true
+```
+
+```go
+// The root command for the CLI
+var rootCmd = &cobra.Command{
+    Use:   "godoc-readme",
+    Short: "Generate README.md file for your go project using comments you already write for godoc",
+    Long:  `Generate README.md file for your go project using comments you already write for godoc`,
+    Run: func(cmd *cobra.Command, args []string) {
+        if readme, err := NewReadme(func(ro *ReadmeOptions) {
+            if !recursive {
+                ro.DirPattern = ro.Dir
+            }
+            if template_filename != "" {
+                ro.TemplateFile = template_filename
+            }
+        }); err != nil {
+            fmt.Fprintln(os.Stderr, err)
+            os.Exit(1)
+        } else {
+            if err = readme.Generate(); err != nil {
+                fmt.Fprintln(os.Stderr, err)
+                os.Exit(1)
+            }
+        }
+
+    },
+}
+```
+
+```go
+var template_file *os.File
+```
+
+```go
+var template_filename string
+```
 
 # Examples
 
@@ -304,6 +381,7 @@ func Example_template_file{
 ## File Names
 
 - [docs.go](./docs.go)
+- [flags.go](./flags.go)
 - [readme.go](./readme.go)
 
 ## Imports

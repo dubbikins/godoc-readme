@@ -63,3 +63,14 @@ func SpecDeclaration(pkg *packages.Package) func([]ast.Spec) string {
 		return buf.String()
 	}
 }
+
+func Declaration(pkg *packages.Package) func(ast.Node) string {
+
+	return func(decl ast.Node) string {
+		var buf = bytes.NewBuffer(nil)
+		buf.WriteString("```go\n")
+		format.Node(buf, pkg.Fset, decl)
+		buf.WriteString("\n```\n")
+		return buf.String()
+	}
+}

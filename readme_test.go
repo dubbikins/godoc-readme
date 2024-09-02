@@ -19,7 +19,6 @@ func Example_help_command() {
 	//   -h, --help   dhelp for godoc-readme
 	//   -r, --recursive   Recursively search for go packages in the directory and generate a README.md for each package (default true)
 	//   -t, --template string   The template file to use for generating the README.md file
-
 }
 
 func Example_template_file() {

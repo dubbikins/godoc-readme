@@ -6,10 +6,10 @@
 
 {{pkg_doc .Doc.Doc}}{{ alert .Doc.Name }}
 {{ template ".Types.tmpl" .Doc.Types }}
-{{ template ".Funcs.tmpl" . }}
-{{ template ".Constants.tmpl" . }}
-{{ template ".Vars.tmpl" . }}
-{{ template ".Examples.tmpl" . }}
+{{ template ".Funcs.tmpl" .Doc.Funcs }}
+{{ template ".Consts.tmpl" .Doc.Consts }}
+{{ template ".Vars.tmpl" .Doc.Vars }}
+{{ template ".Examples.tmpl" .Doc.Examples }}
 {{ template ".Filenames.tmpl" .Doc.Filenames }}
 {{ template ".Imports.tmpl" .Doc.Imports }}
 {{end}}

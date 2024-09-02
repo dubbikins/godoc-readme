@@ -130,9 +130,10 @@ type ReadmeOptions struct {
 //
 // ```
 func NewReadme(opts ...func(*ReadmeOptions)) (readme *Readme, err error) {
+	//packages.NeedName | packages.NeedFiles | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypes | packages.NeedEmbedFiles | packages.NeedCompiledGoFiles | packages.NeedImports | packages.NeedTypesInfo | packages.NeedTypesSizes | packages.NeedDeps
 	readme = &Readme{
 		options: &ReadmeOptions{
-			package_load_mode: packages.NeedName | packages.NeedFiles | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypes | packages.NeedEmbedFiles | packages.NeedCompiledGoFiles | packages.NeedImports | packages.NeedTypesInfo | packages.NeedTypesSizes | packages.NeedDeps,
+			package_load_mode: ^packages.LoadMode(0),
 			Format: FormatMarkdown,
 		},
 		Pkgs: map[string]*packages.Package{},
@@ -250,6 +251,7 @@ func (readme *Readme) Generate() (err error) {
 			"gen_decl": 	 template_functions.GenDeclaration(pkg),
 			"spec_decl": 	 template_functions.SpecDeclaration(pkg),
 			"fn_decl": 		 template_functions.FuncDeclaration(pkg),
+			"decl":          template_functions.Declaration(pkg),
 			"section":       template_functions.Section,
 			"pkg_doc":       template_functions.PackageDocString,
 			"relative_path": template_functions.RelativeFilename,
@@ -276,6 +278,7 @@ func (readme *Readme) Generate() (err error) {
 				return
 			}
 		}
+		fmt.Println(package_readme.Doc.Consts)
 		if err = tmpl.Execute(buf, package_readme); err != nil {
 			return
 		}

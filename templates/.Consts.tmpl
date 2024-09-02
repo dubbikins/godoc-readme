@@ -1,6 +1,6 @@
-{{ define ".Constants.tmpl" }}
-{{ $len := len .Doc.Consts }}{{ if gt $len 0 }}## Constants
-{{ range .Doc.Consts }}
+{{ define ".Consts.tmpl" }}
+{{ $len := len . }}{{ if gt $len 0 }}## Constants
+{{ range . }}
     {{.Doc}}
     {{ $group_len := len .Names}} {{ if gt $group_len 1 }}{{ range .Names }} - {{.}}{{else}}{{end}}
     {{end}}

@@ -100,6 +100,13 @@ You can utilize these functions in your own custom templates to generate documen
 >```
 
 ---
+## [func Declaration](./decl.go#L67-L76)
+
+>```go
+>func Declaration(pkg *packages.Package) func(ast.Node) string
+>```
+
+---
 ## [func DocString](./format.go#L38-L51)
 
 >```go
