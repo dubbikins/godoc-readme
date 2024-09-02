@@ -152,22 +152,19 @@ while single-line alerts are great for adding a note to a specific type, func, m
 
 
 
-## Functions
+## Functions### [func Execute](./readme.go#L65-L65)
 
-
-
-### [func Execute](./readme.go#L65-L65)
-> ```go
-    >func Execute(args ...string)
-> ``` 
+>```go
+>func Execute(args ...string)
+>```
+>
 >Execute runs the root command using the os.Args by default
 >Optionally, you can pass in a list of arguments to run the command with
 >
 
 
+
 ---
-
-
 
 
 

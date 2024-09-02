@@ -1,7 +1,2 @@
 {{ define ".Funcs.tmpl" }}
-{{ $len := len .Doc.Funcs }}{{ if gt $len 0 }}## Functions{{end}}
-
-{{ range .Doc.Funcs }}
-{{ template ".Func.tmpl" . }}
-{{end}}
-{{end}}
+{{ $len := len .Doc.Funcs }}{{ if gt $len 0 }}## Functions{{end}}{{ range .Doc.Funcs }}{{ template ".Func.tmpl" . }}{{end}}{{end}}
