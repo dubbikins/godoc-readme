@@ -186,7 +186,7 @@ type PackageReadme struct {
 Generate creates the README.md file for the packages that are registered with a `Readme`
 
 The README is generated in the directory of the package using the template file provided or the default template in none is provided.
-The template functions that are made available to the template arg defined in the [`template_functions` package](./template_functions/README.go)
+The template functions that are made available to the template arg defined in the [`template_functions` package](./template_functions)
 */
 func (readme *Readme) Generate() (err error) {
 
