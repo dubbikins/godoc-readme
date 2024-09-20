@@ -6,6 +6,9 @@
 
 Godoc-readme is a CLI that generates a README.md file for your go project using comments you already write!
 
+> [!WARNING]
+> This package is still under developement. The API may change, some features may be broken or incomplete.
+
 In fact, this README.md file was generated using godoc-readme! :open_mouth:
 
 godoc-readme is built using the [godoc](https://go.dev/blog/godoc) from the standard library.

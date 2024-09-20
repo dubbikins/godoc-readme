@@ -1,6 +1,6 @@
 module github.com/dubbikins/godoc-readme
 
-go 1.21.3
+go 1.23.1
 
 require (
 	github.com/dubbikins/envy v0.0.5

@@ -1,6 +1,8 @@
 /*
 Godoc-readme is a CLI that generates a README.md file for your go project using comments you already write!
 
+WARNING(godoc_readme): This package is still under developement. The API may change, some features may be broken or incomplete.
+
 In fact, this README.md file was generated using godoc-readme! :open_mouth:
 
 godoc-readme is built using the [godoc](https://go.dev/blog/godoc) from the standard library.
@@ -89,34 +91,10 @@ while single-line alerts are great for adding a note to a specific type, func, m
 package godoc_readme
 
 /*
-The standard templates provided for godoc-readme render a package's reading in the following format/order:
+Directives
 
-	1. Package Title (name)
-	2. Package Docs
-	3. Package Alerts
-	4. Package Types (if any)
+@godoc-readme{
+	$Includes => IncludeTypes | IncludeFuncs | IncludeVars | IncludeConst 
+}
 
-		1. Type w/Link to Source
-		2. Type Signature
-		3. Type Doc
-		4. Type Alerts
-		5. Type Methods
-		6. Type Examples
-
-	5. Package Functions (if any)
-		1. Function Name w/Link to Source
-		2. Function Signature
-		3. Function Doc
-		4. Function Alerts
-		5. Function Examples
-
-	6. Package Constants (if any)
-		1. Constant Name w/Link to Source
-		2. Constant Doc
-	7. Package Variables (if any)
-		1. Variables Name w/Link to Source
-		2. Variables Doc
-	8. Package Examples (if any)
-		1. Example Name (dropdown)
-		2. Example Code & Output
 */

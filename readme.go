@@ -157,7 +157,7 @@ func NewReadme(opts ...func(*ReadmeOptions)) (readme *Readme, err error) {
 	}
 
 	for _, pkg := range readme.pkgs {
-		for f_index, file := range pkg.CompiledGoFiles {
+		for f_index, file := range pkg.GoFiles {
 			//Strip all of the files that are not go files
 			if !strings.HasSuffix(file, ".go") {
 				pkg.Syntax = append(pkg.Syntax[:f_index], pkg.Syntax[f_index+1:]...)
