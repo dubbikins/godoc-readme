@@ -15,6 +15,22 @@ In fact, this README.md file was generated using godoc-readme! :open_mouth:
 Godoc-Readme is built using the [packages package](https://pkg.go.dev/golang.org/x/tools/go/packages) from the go tools. It uses your existing
 [godoc comments](https://go.dev/blog/godoc) that you're already writing in your code to generate your READMEs... You are writing comments...right?
 
+Add a package doc like:
+
+```go
+//This first line will be a title
+//Then everything else will be rendered at the top of the readme, you can format me as markdown!
+package your_package_name
+```
+
+Then simply run the following command in your package to generate the readme file! It's that simple!
+
+```shell
+godoc-readme
+```
+
+Checkout the [CLI README](./cmd/README.md) for help with using the tool, including customizing the output formatting.
+
 ## Installing:
 
 Run the following command to install godoc-readme
@@ -25,10 +41,10 @@ Run the following command to install godoc-readme
 
 ```
 
-Checkout the [CLI README](./cmd/README.md) for help with using the tool
-
 > [!TIP]
 > Use the `//go:generate godoc-readme -r` directive in your module root to generate a README.md file for your packages when the `go generate` command is run.
+
+## Features
 
 ---
 

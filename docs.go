@@ -3,12 +3,28 @@ Godoc Readme - Easy Peasy :lemon: README
 
 Godoc-readme is a CLI that generates a README.md file for your go project using comments you already write!
 
-WARNING(godoc_readme): This package is still under developement. The API may change, some features may be broken or incomplete.
+WARNING(main): This package is still under developement. The API may change, some features may be broken or incomplete.
 
 In fact, this README.md file was generated using godoc-readme! :open_mouth:
 
 Godoc-Readme is built using the [packages package](https://pkg.go.dev/golang.org/x/tools/go/packages) from the go tools. It uses your existing
 [godoc comments](https://go.dev/blog/godoc) that you're already writing in your code to generate your READMEs... You are writing comments...right?
+
+Add a package doc like:
+
+```go
+//This first line will be a title
+//Then everything else will be rendered at the top of the readme, you can format me as markdown!
+package your_package_name
+```
+
+Then simply run the following command in your package to generate the readme file! It's that simple!
+
+```shell
+godoc-readme
+```
+
+Checkout the [CLI README](./cmd/README.md) for help with using the tool, including customizing the output formatting.
 
 ## Installing:
 
@@ -20,9 +36,11 @@ Run the following command to install godoc-readme
 
 ```
 
-Checkout the [CLI README](./cmd/README.md) for help with using the tool
+TIP(main): Use the `//go:generate godoc-readme -r` directive in your module root to generate a README.md file for your packages when the `go generate` command is run.
 
-TIP(godoc_readme): Use the `//go:generate godoc-readme -r` directive in your module root to generate a README.md file for your packages when the `go generate` command is run.
+
+## Features
+
 
 ---
 
@@ -79,7 +97,7 @@ Syntax:
 	A single-line "targeted" Note will appear after the target's doc string section in the README.md file while in-line notes will appear in-line of the doc string.
 	Targeted notes must be on a single line and must begin with a space.
 
-WARNING(godoc_readme): An in-line alert cannot have whitespace before it's declaration or it will be rendered as plain doc string text while a targeted alert must have one space before it's declaration.
+WARNING(main): An in-line alert cannot have whitespace before it's declaration or it will be rendered as plain doc string text while a targeted alert must have one space before it's declaration.
 
 TIP(godoc_readme): In-line alerts are great for enhancing your documentaion in large godoc comments that you want to control the placement of the alert
 while single-line alerts are great for adding a note to a specific type, func, method, var, or const in your package. Since a single-line alert doesn't have to be collocated with the target, you can add targeted alerts from anywhere in your package.
