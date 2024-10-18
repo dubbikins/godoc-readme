@@ -85,6 +85,7 @@ var rootCmd = &cobra.Command{
 			if template_filename != "" {
 				ro.TemplateFile = template_filename
 			}
+			ro.ConfirmUpdates = confirm_updates
 			ro.Flags = flags
 	
 		}); err != nil {
