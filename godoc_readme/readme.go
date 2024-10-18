@@ -6,17 +6,17 @@ import (
 	"fmt"
 	"go/doc"
 	"io"
-	"log/slog"
 	"os"
 	"path"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"text/template"
 
 	"github.com/dubbikins/envy"
-	"github.com/dubbikins/godoc-readme/template_functions"
-	"github.com/spf13/cobra"
+	"github.com/dubbikins/godoc-readme/godoc_readme/template_functions"
+	"github.com/sergi/go-diff/diffmatchpatch"
 	"golang.org/x/tools/go/packages"
 )
 
@@ -25,55 +25,7 @@ import (
 //
 //go:embed templates/*
 var readme_templates embed.FS
-var recursive bool = true
-var template_filename string
-var template_file *os.File
 
-//go:generate go run ./godoc-readme/main.go
-
-func init() {
-	rootCmd.PersistentFlags().BoolVarP(&recursive, "recursive", "r", true, "Recursively search for go packages in the directory and generate a README.md for each package")
-	rootCmd.PersistentFlags().StringVarP(&template_filename, "template", "t", "", "The template file to use for generating the README.md file")
-	//rootCmd.Flags().BoolP("recursive", "r", true, "Recursively search for go packages in the directory and generate a README.md for each package")
-}
-
-// The root command for the CLI
-var rootCmd = &cobra.Command{
-	Use:   "godoc-readme",
-	Short: "Generate README.md file for your go project using comments you already write for godoc",
-	Long:  `Generate README.md file for your go project using comments you already write for godoc`,
-	Run: func(cmd *cobra.Command, args []string) {
-		if readme, err := NewReadme(func(ro *ReadmeOptions) {
-			if !recursive {
-				ro.DirPattern = ro.Dir
-			}
-			if template_filename != "" {
-				ro.TemplateFile = template_filename
-			}
-		}); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		} else {
-			if err = readme.Generate(); err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
-			}
-		}
-		
-	},
-}
-
-// Execute runs the root command using the os.Args by default
-// Optionally, you can pass in a list of arguments to run the command with
-func Execute(args ...string) {
-	if len(args) > 0 {
-		rootCmd.SetArgs(args)
-	}
-	if err := rootCmd.Execute(); err != nil {
-		slog.Error(err.Error())
-		os.Exit(1)
-	}
-}
 
 //NOTE(Readme): Because of the simpicity of godoc-readme's templating engine, you can add powerful customizations to your documentation like the class diagram that was created using a code block and the [mermaid.js](https://mermaid.js.org/) library that is supported out of the box with Github markdown. (not all features are supported though.)
 
@@ -101,12 +53,14 @@ classDiagram
 */
 type Readme struct {
 	Pkgs    map[string]*packages.Package
+	TestPkgs    map[string]*packages.Package
 	pkgs    []*packages.Package
 	options *ReadmeOptions
+	stdio io.Reader
+	readmes []*PackageReadme
+	// buf bytes.Buffer
 }
 
-// ReadmeOptions is a struct that holds the options for the Readme struct
-// You can set the options via the options functions or by setting the environment variables defined in the `env` struct tag for the Option field
 type ReadmeOptions struct {
 
 	Dir				   string`env:"GODOC_README_MODULE_DIR"`
@@ -114,7 +68,16 @@ type ReadmeOptions struct {
 	TemplateFile       string `env:"GODOC_README_TEMPLATE_FILE"`
 	Format             func([]byte) []byte
 	package_load_mode  packages.LoadMode
+	
+	ConfirmUpdates bool
+	Flags template_functions.Flags
 }
+
+
+
+// ReadmeOptions is a struct that holds the options for the Readme struct
+// You can set the options via the options functions or by setting the environment variables defined in the `env` struct tag for the Option field
+
 
 // NewReadme creates a new Readme struct that holds the packages, ast and docs of the package
 // It loads the packages in the directory provided and parses the ast and docs of the package
@@ -137,6 +100,8 @@ func NewReadme(opts ...func(*ReadmeOptions)) (readme *Readme, err error) {
 			Format: FormatMarkdown,
 		},
 		Pkgs: map[string]*packages.Package{},
+		TestPkgs: map[string]*packages.Package{},
+		readmes: []*PackageReadme{},
 	}
 	if err = envy.Unmarshal(readme.options); err != nil {
 		return
@@ -168,12 +133,14 @@ func NewReadme(opts ...func(*ReadmeOptions)) (readme *Readme, err error) {
 		}
 		//If the package is already in the refined packages map, then we check if the package is not a test package
 		// The test package will include more details that we want
-		if p, found := readme.Pkgs[pkg.Name]; found {
-			if !strings.Contains(p.ID, "test") {
-				readme.Pkgs[pkg.Name] = pkg
-			}
-		}
-		readme.Pkgs[pkg.Name] = pkg
+		// if p, found := readme.Pkgs[pkg.Name]; found {
+			
+		// }
+		if !strings.Contains(pkg.ID, "test") {
+			readme.TestPkgs[pkg.Name] = pkg
+		}else {
+			readme.Pkgs[pkg.Name] = pkg
+		}	
 	}
 	return
 }
@@ -198,6 +165,13 @@ type PackageReadme struct {
 	Options ReadmeOptions
 	Pkg     *packages.Package
 	Doc     *doc.Package
+	bytes.Buffer
+	package_dir string
+	file_path string
+	rel_file_path string
+	file_name string
+	file *os.File
+	cwd string
 }
 
 /*
@@ -221,26 +195,62 @@ Additionally, the following functions are available in the template engine:
 - `base`: [filepath.Base] Returns the base name of a file path
 */
 func (readme *Readme) Generate() (err error) {
+	fmt.Println("Generated Documentation:")
+	for _, pkg := range readme.Packages {
+		var pkg_readme *PackageReadme
+		if pkg_readme, err = readme.generate_pkg_readme(pkg,"README.md"); err != nil {
+			return
+		}
+		readme.readmes = append(readme.readmes, pkg_readme)
+		fmt.Printf("\t- ./%s\n", pkg_readme.rel_file_path)
+	}
+	return
+}
 
-	for _, pkg := range readme.Pkgs {
-		package_readme := PackageReadme{
+func (readme *Readme) PackageREADMES(yield func(*PackageReadme) bool) {
+	for _, _readme := range readme.readmes {
+		if !yield(_readme) {
+			break
+		}
+	}
+}
+
+func (readme *Readme) Packages(yield func(string, *packages.Package) bool) {
+	var pkgs map[string] *packages.Package
+	if readme.options.Flags.SkipExamples {
+		pkgs = readme.Pkgs
+	}else {
+		pkgs =readme.TestPkgs
+	}
+	var sorted_pkg_keys []string  = make([]string,0, len(pkgs))
+	for name, _ := range pkgs {
+		sorted_pkg_keys = append(sorted_pkg_keys, name)
+	}
+	sort.Slice(sorted_pkg_keys, func(i, j int) bool {
+		return strings.Compare(sorted_pkg_keys[i], sorted_pkg_keys[j])  == -1
+	})
+	for _, key := range sorted_pkg_keys {
+		if !yield(key, pkgs[key]) {
+			break
+		}
+	}
+}
+
+func (readme *Readme) generate_pkg_readme(pkg *packages.Package, filename string) (package_readme *PackageReadme, err error) {
+		package_readme = &PackageReadme{
 			Pkg:     pkg,
 			Options: *readme.options,
 		}
 		if package_readme.Doc, err = doc.NewFromFiles(pkg.Fset, pkg.Syntax, pkg.PkgPath,doc.AllDecls| doc.AllMethods |doc.PreserveAST); err != nil {
 			return
 		}
-		var buf = bytes.NewBuffer(nil)
-		var readme_file *os.File
-		if pkg.GoFiles == nil || len(pkg.GoFiles) == 0 {
-			continue
-		}
-		var readme_file_path = filepath.Dir(pkg.GoFiles[0])
-		var file_name = path.Join(readme_file_path, "README.md")
-		if readme_file, err = os.Create(file_name); err != nil { //fmt.Sprintf("./README.%s.md", pkg.Name)
+		// var buf = bytes.NewBuffer(nil)	
+		if len(pkg.GoFiles) == 0 {
 			return
 		}
-
+		var readme_file_path = filepath.Dir(pkg.GoFiles[0])
+		package_readme.file_name = path.Join(readme_file_path,filename )
+		var existing_file *os.File
 		fn_map := template.FuncMap{
 			"example":       template_functions.ExampleCode(pkg),
 			"code":          template_functions.CodeBlock(pkg),
@@ -255,40 +265,90 @@ func (readme *Readme) Generate() (err error) {
 			"section":       template_functions.Section,
 			"pkg_doc":       template_functions.PackageDocString,
 			"relative_path": template_functions.RelativeFilename,
+			"title":         template_functions.Title(pkg, package_readme.Doc),
+			"flags":         template_functions.GetFlag(readme.options.Flags),
 			"filename":          filepath.Base,
 		}
-
 		var tmpl *template.Template
-		if readme.options.TemplateFile != "" {
-			var template_data []byte
-			template_file, err = os.Open(readme.options.TemplateFile)
-			if err != nil {
-				return err
-			}
-			template_data, err = io.ReadAll(template_file)
-			if err != nil {
-				return err
-			}
-
-			if tmpl, err = template.New(pkg.Name).Funcs(fn_map).Parse(string(template_data)); err != nil {
-				return
-			}
-		} else {
+		// if readme.options.TemplateFile != "" {
+			// var template_data []byte
+			// template_file, err = os.Open(readme.options.TemplateFile)
+			// if err != nil {
+			// 	return 
+			// }
+			// template_data, err = io.ReadAll(template_file)
+			// if err != nil {
+			// 	return 
+			// }
+			// if tmpl, err = template.New(pkg.Name).Funcs(fn_map).Parse(string(template_data)); err != nil {
+			// 	return
+			// }
+		//} else {
 			if tmpl, err = template.New("README.tmpl").Funcs(fn_map).ParseFS(readme_templates, "templates/*.tmpl"); err != nil {
 				return
 			}
-		}
-		fmt.Println(package_readme.Doc.Consts)
-		if err = tmpl.Execute(buf, package_readme); err != nil {
+			
+		//}
+		if err = tmpl.Execute(package_readme, package_readme); err != nil {
 			return
 		}
 		if readme.options.Format == nil {
 			readme.options.Format = FormatMarkdown
 		}
-		if _, err = readme_file.Write(readme.options.Format(buf.Bytes())); err != nil {
+		if _, err = os.Stat(package_readme.file_name); err == nil {
+			if readme.options.ConfirmUpdates {
+				if existing_file, err = os.Open(package_readme.file_name); err != nil {
+					return
+				}
+				defer existing_file.Close()
+				fmt.Printf("The file %s already exists, do you want to overwrite it? (y/n/diff): ", package_readme.file_name)
+				var response string
+				fmt.Scanln(&response)
+				if strings.ToLower(response) == "y" {
+					fmt.Println("Overwriting file...")
+				} else if strings.ToLower(response) == "diff" {
+					fmt.Println("Generating file diff...")
+					dmp := diffmatchpatch.New()
+					var existing_data []byte 
+					if existing_data, err = io.ReadAll(existing_file); err != nil {
+						return
+					}
+					diffs := dmp.DiffMain(string(existing_data), package_readme.String(), false)
+					fmt.Println("Original:")
+					fmt.Println(string(existing_data))
+					fmt.Println("New:")
+					fmt.Println(dmp.DiffPrettyText(diffs))
+					fmt.Println("Proceed with overwritting file? (y/n): ", package_readme.file_name)
+					var response string
+					fmt.Scanln(&response)
+					if strings.ToLower(response) != "y" {
+						return
+					} 
+				} else {
+					fmt.Println("Not Overwriting file...")
+					return
+				}
+			}
+		}
+		if package_readme.file, err = os.Create(package_readme.file_name); err != nil { //fmt.Sprintf("./README.%s.md", pkg.Name)
 			return
 		}
-		fmt.Printf("[%s] generated successfully :tada:\n",file_name )
-	}
-	return
+		//defer package_readme.file.Close()
+		if _, err = package_readme.file.Write(readme.options.Format(package_readme.Bytes())); err != nil {
+			return
+		}
+		if  package_readme.cwd , err = os.Getwd(); err != nil {
+			return
+		}
+		// fmt.Println("CWD: ", package_readme.cwd)
+		// fmt.Println("Module Dir: ", package_readme.Pkg.Module.Dir)
+		// fmt.Println("File Name: ", package_readme.file_name)
+		// fmt.Println("PkgPath: ", package_readme.Pkg.PkgPath)
+		// fmt.Println("Module Path: ", package_readme.Pkg.Module.Path)
+
+		// if  package_readme.rel_file_path, err = filepath.Rel( package_readme.cwd,package_readme.Pkg.Module.Dir);err != nil {
+		// 	return
+		// }
+		package_readme.rel_file_path = filepath.Join(strings.Replace( package_readme.Pkg.PkgPath, package_readme.Pkg.Module.Path, "./", 1), filename)
+		return 
 }

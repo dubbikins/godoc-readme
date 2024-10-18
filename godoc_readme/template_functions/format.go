@@ -5,7 +5,7 @@ import (
 	"go/ast"
 	"go/format"
 	"regexp"
-	"testing"
+	"strings"
 
 	"golang.org/x/tools/go/packages"
 )
@@ -31,7 +31,11 @@ func PackageDocString(doc string) string {
 
 	var inline_alerts_pattern = regexp.MustCompile(`(?m:^(NOTE|WARNING|IMPORTANT|CAUTION|TIP)\(([a-zA-Z][a-zA-Z0-9_]*)\):(.*)$)`)
 	var inline_alerts_replace = "> [!$1]\n>$3"
-	return DocString(inline_alerts_pattern.ReplaceAllString(doc, inline_alerts_replace))
+	var first_new_line_index = strings.IndexRune(doc, '\n')
+	if first_new_line_index == -1 {
+		first_new_line_index = 0
+	}
+	return DocString(inline_alerts_pattern.ReplaceAllString("![godoc-readme badge](https://img.shields.io/badge/generated%20by%20godoc--readme-00ADD8?style=plastic&logoSize=large&logo=Go&logoColor=00ADD8&labelColor=FFFFFF)\n" + doc[first_new_line_index:], inline_alerts_replace))
 
 }
 
@@ -40,7 +44,7 @@ func DocString(doc string) string {
 	hard_tab_replace_with_n_spaces := 4
 	
 	// var hard_tab_replace = fmt.Sprintf("%s$2", strings.Repeat(" ", hard_tab_replace_with_n_spaces))
-	return string(hard_tab_pattern.ReplaceAllFunc([]byte(doc), func(b []byte) []byte {
+	return string(hard_tab_pattern.ReplaceAllFunc([]byte( doc), func(b []byte) []byte {
 		var replace = []byte{}
 		for bytes.HasPrefix(b, []byte("\t")) {
 			replace = append(replace, bytes.Repeat([]byte(" "), hard_tab_replace_with_n_spaces)...)
@@ -48,13 +52,4 @@ func DocString(doc string) string {
 		}
 		return append(replace, b...)
 	}))
-}
-
-func TestFormatTabs(t *testing.T) {
-
-	have := PackageDocString("## Alerts\n\nNOTE(target): this is a note\n\nNext line\n")
-	want := "## Alerts\n\n> [!NOTE]\n> this is a note\n\nNext line\n"
-	if have != want {
-		t.Errorf("expected %q but got %q", want, have)
-	}
 }

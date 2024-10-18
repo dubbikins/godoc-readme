@@ -1,5 +1,7 @@
 /*
-Package template_functions provides a set of functions that are passed to the template engine to generate documentation.
+Package template_functions
+
+This package provides a set of functions that are passed to the template engine to generate documentation.
 
 The functions are used to format the documentation in a way that is easy to read and understand.
 

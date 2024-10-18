@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"regexp"
 	"testing"
+
+	"github.com/sergi/go-diff/diffmatchpatch"
 )
 
 func TestXxx(t *testing.T) {
@@ -39,9 +41,11 @@ func TestXxx(t *testing.T) {
 
 func TestFormatInlineAlerts(t *testing.T) {
 
-	have := PackageDocString("## Alerts\n\nNOTE(target): this is a note\n\nNext line\n")
-	want := "## Alerts\n\n> [!NOTE]\n> this is a note\n\nNext line\n"
+	have := PackageDocString("title\n## Alerts\n\nNOTE(target): this is a note\n\nNext line\n")
+	want := "![godoc-readme badge](https://img.shields.io/badge/generated%20by%20godoc--readme-00ADD8?style=plastic&logoSize=large&logo=Go&logoColor=00ADD8&labelColor=FFFFFF)\n\n## Alerts\n\n> [!NOTE]\n> this is a note\n\nNext line\n"
 	if have != want {
-		t.Errorf("expected %q but got %q", want, have)
+		dmp := diffmatchpatch.New()
+		diffs := dmp.DiffMain(have, want, true)
+		t.Errorf("expected %q but got %q\nDiffs:\n%s", want, have, dmp.DiffPrettyText(diffs))
 	}
 }
