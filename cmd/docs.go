@@ -15,6 +15,12 @@ You can use the godoc-readme CLI to generate a README.md file for your go projec
 		-r, --recursive         If set, recursively search for go packages in the directory
 			and generate a README.md for each package;
 			Default behavior is to only create a README for the package in the current directory.
-			--skip-examples     Skips generating the examples defined in test files
+			--skip-all          Skips generating all sections besides the package documentation
+			--skip-consts       Shows generating the consts section
+			--skip-examples     Skips generating the examples section
+			--skip-filenames    Skips generating the files section
+			--skip-funcs        Skips generating the functions section
+			--skip-imports      Skips generating the imports section
+			--skip-vars         Skips generating the vars section
 */
 package cmd

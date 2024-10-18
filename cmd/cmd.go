@@ -61,7 +61,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(
 		&flags.SkipAll, 
 		"skip-all", false,
-		"Skips generating sections besides the package documentation",
+		"Skips generating all sections besides the package documentation",
 	)
 	// rootCmd.PersistentFlags().StringVarP(
 	// 	&template_filename, 
