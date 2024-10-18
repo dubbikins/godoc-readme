@@ -29,7 +29,7 @@ You can use the godoc-readme CLI to generate a README.md file for your go projec
 
 # Functions
 
-## [func Execute](./cmd.go#L106-L116)
+## [func Execute](./cmd.go#L109-L119)
 
 >```go
 >func Execute(args ...string) error
@@ -38,7 +38,7 @@ You can use the godoc-readme CLI to generate a README.md file for your go projec
 >Optionally, you can pass in a list of arguments to run the command with
 
 ---
-## [func init](./cmd.go#L20-L72)
+## [func init](./cmd.go#L22-L74)
 
 >```go
 >func init()
@@ -48,9 +48,13 @@ You can use the godoc-readme CLI to generate a README.md file for your go projec
 ---
 
 ## Vars
+
 ```go
 var confirm_updates bool
 ```
+
+>[!NOTE]
+>These Flags are used to determine which sections of the README.md file to generate
 
 ```go
 var flags template_functions.Flags = template_functions.Flags{}
@@ -75,6 +79,7 @@ var rootCmd = &cobra.Command{
             if template_filename != "" {
                 ro.TemplateFile = template_filename
             }
+            ro.ConfirmUpdates = confirm_updates
             ro.Flags = flags
 
         }); err != nil {

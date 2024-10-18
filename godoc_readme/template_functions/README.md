@@ -60,7 +60,7 @@ You can utilize these functions in your own custom templates to generate documen
 ---
 # Functions
 
-## [func Alert](./alert.go#L24-L70)
+## [func Alert](./alert.go#L24-L71)
 
 >```go
 >func Alert(pkg *packages.Package, notes map[string][]*doc.Note) func(string) string

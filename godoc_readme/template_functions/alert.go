@@ -22,6 +22,7 @@ import (
 // Can be used in a template by calling `{{ Alert "target_name" }}` where `target_name` is the name of the package, a Type, Func, Var, or Const in the package.
 // Alerts are rendered AFTER the doc comment for the target by default. Provide your own templates to modify this behavior.
 func Alert(pkg *packages.Package, notes map[string][]*doc.Note) func(string) string {
+
 	_alert_types := []string{"NOTE", "WARNING", "IMPORTANT", "CAUTION", "TIP"}
 	var package_alerts = map[string]map[string][]*doc.Note{}
 	for _, alert_type := range _alert_types {

@@ -1,4 +1,5 @@
 {{ define ".Vars.tmpl" }}
 {{ $len := len . }}{{ if gt $len 0 }}## Vars
-{{ range . }}{{decl .Decl }}
+
+{{ range . }}{{range .Names }}{{alert . }}{{end}}{{decl .Decl }}
 {{end}}{{end}}{{end}}

@@ -175,6 +175,7 @@ Implements the godocs parsing and README generation from template files.
 ---
 
 ## Vars
+
 ```go
 // The readme templates are embedded in the binary so that it can be used as a default template
 // This value can be overridden by providing a template file using the --template flag or the GODOC_README_TEMPLATE_FILE environment variable

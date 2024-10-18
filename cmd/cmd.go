@@ -12,9 +12,11 @@ import (
 var recursive bool = true
 var template_filename string
 var confirm_updates bool
+
+// NOTE(flags): These Flags are used to determine which sections of the README.md file to generate
+
 var flags template_functions.Flags = template_functions.Flags{
 }
-
 
 // Initializes the CLI flags/Arguments
 func init() {
