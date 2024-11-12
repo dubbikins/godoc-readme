@@ -36,9 +36,7 @@ Checkout the [CLI README](./cmd/README.md) for help with using the tool, includi
 Run the following command to install godoc-readme
 
 ```shell
-
-    go install github.com/dubbikins/godoc-readme@latest
-
+go install github.com/dubbikins/godoc-readme@latest
 ```
 
 > [!TIP]

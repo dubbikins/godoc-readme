@@ -31,16 +31,12 @@ Checkout the [CLI README](./cmd/README.md) for help with using the tool, includi
 Run the following command to install godoc-readme
 
 ```shell
-
-	go install github.com/dubbikins/godoc-readme@latest
-
+go install github.com/dubbikins/godoc-readme@latest
 ```
 
 TIP(main): Use the `//go:generate godoc-readme -r` directive in your module root to generate a README.md file for your packages when the `go generate` command is run.
 
-
 ## Features
-
 
 ---
 
@@ -109,3 +105,8 @@ while single-line alerts are great for adding a note to a specific type, func, m
 	This is a second line.
 */
 package main
+
+//go:generate go run main.go --skip-all
+//go:generate go run main.go -p github.com/dubbikins/godoc-readme/cmd --skip-imports --skip-filenames --skip-empty
+//go:generate go run main.go -p github.com/dubbikins/godoc-readme/godoc_readme --skip-imports --skip-filenames --skip-empty
+//go:generate go run main.go -p github.com/dubbikins/godoc-readme/godoc_readme/template_functions --skip-types --skip-imports --skip-filenames --skip-empty

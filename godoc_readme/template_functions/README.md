@@ -11,53 +11,6 @@ The functions are used to format the documentation in a way that is easy to read
 
 You can utilize these functions in your own custom templates to generate documentation for your packages with customize formatting/behvior if the standard templates provided by godoc-readme do not meet your needs.
 
-# Types
-
-## [type Flags](./flags.go#L4-L16)
-
->```go
->type Flags struct {
->    SkipImports   bool
->    SkipExamples  bool
->    SkipVars      bool
->    SkipTypes     bool
->    SkipFuncs     bool
->    SkipMethods   bool
->    SkipFilenames bool
->    SkipConsts    bool
->    SkipAll       bool
->}
->```
-
---- 
-
-## [type Target](./decl.go#L27-L30)
-
->```go
->type Target struct {
->    start token.Pos // position of first character belonging to the node
->    end   token.Pos
->}
->```
-
----
-
-### Methods
-
-### [method End](./decl.go#L34-L36)
-
->```go
->func (t *Target) End() token.Pos
->```
-
-### [method Pos](./decl.go#L31-L33)
-
->```go
->func (t *Target) Pos() token.Pos
->```
-
---- 
----
 # Functions
 
 ## [func Alert](./alert.go#L24-L71)
@@ -119,24 +72,8 @@ You can utilize these functions in your own custom templates to generate documen
 >```
 
 ---
-## [func Declaration](./decl.go#L67-L76)
 
->```go
->func Declaration(pkg *packages.Package) func(ast.Node) string
->```
-
----
-## [func DocString](./format.go#L42-L55)
-
->```go
->func DocString(doc string) string
->```
-
->[!CAUTION]
->Targets types doc strings are nested by default and an alert will not be rendered correctly if they remain nested. If you are using the `DocString` function in a custom template setup, make sure you render the target's types without nesting to display the alerts correctly.
-
----
-## [func ExampleCode](./example.go#L15-L32)
+## [func ExampleCode](./example.go#L15-L33)
 
 >```go
 >func ExampleCode(pkg *packages.Package) func(*doc.Example) string
@@ -145,6 +82,7 @@ You can utilize these functions in your own custom templates to generate documen
 >You can call this function in a template by using `{{ example . }}` where `.` is a `*doc.Example` instance
 
 ---
+
 ## [func FormatNode](./format.go#L15-L24)
 
 >```go
@@ -154,27 +92,7 @@ You can utilize these functions in your own custom templates to generate documen
 >Can be called in a template by using the `fmt` function `{{ format . }}` where `.` is a type that implements `*ast.Node`
 
 ---
-## [func FuncDeclaration](./decl.go#L38-L54)
 
->```go
->func FuncDeclaration(pkg *packages.Package) func(*ast.FuncDecl) string
->```
-
----
-## [func GenDeclaration](./decl.go#L14-L26)
-
->```go
->func GenDeclaration(pkg *packages.Package) func(*ast.GenDecl) string
->```
-
----
-## [func GetFlag](./flags.go#L18-L40)
-
->```go
->func GetFlag(flags Flags) func(string) bool
->```
-
----
 ## [func Link](./link.go#L14-L24)
 
 >```go
@@ -193,13 +111,7 @@ You can utilize these functions in your own custom templates to generate documen
 >Usage: `{{ DocString .Doc }}` where `.Doc` is a string containing godoc notes for a PACKAGE
 
 ---
-## [func RelativeFilename](./filenames.go#L8-L10)
 
->```go
->func RelativeFilename(filepath string) (relative string)
->```
-
----
 ## [func Section](./section.go#L10-L22)
 
 >```go
@@ -212,45 +124,4 @@ You can utilize these functions in your own custom templates to generate documen
 >    `Section("This is a section", 1)` returns "> This is a section"
 
 ---
-## [func SpecDeclaration](./decl.go#L56-L65)
-
->```go
->func SpecDeclaration(pkg *packages.Package) func([]ast.Spec) string
->```
-
----
-## [func Title](./title.go#L10-L35)
-
->```go
->func Title(pkg *packages.Package, doc *doc.Package) func() string
->```
-
----
-
-## File Names
-
-- [alert.go](./alert.go)
-- [code.go](./code.go)
-- [decl.go](./decl.go)
-- [docs.go](./docs.go)
-- [example.go](./example.go)
-- [filenames.go](./filenames.go)
-- [flags.go](./flags.go)
-- [format.go](./format.go)
-- [link.go](./link.go)
-- [section.go](./section.go)
-- [title.go](./title.go)
-
-## Imports
-
-- bytes
-- fmt
-- go/ast
-- go/doc
-- go/format
-- go/token
-- golang.org/x/tools/go/packages
-- path
-- regexp
-- strings
 

@@ -1,5 +1,5 @@
 {{ define ".Func.tmpl"}}
-## {{link (printf "func %s" .Name) .Decl}}
+{{if not (skip_empty .Doc)}}## {{link (printf "func %s" .Name) .Decl}}
 
-{{section (fn_decl .Decl) 1}}{{section .Doc 1}}{{alert .Name }}{{ range .Examples}}{{example .}}{{end}}
----{{end}}
+{{section (fn_decl .Decl) 1}}{{section .Doc 1}}{{alert .Name }}{{ range .Examples }}{{example .}}{{end}}
+---{{end}}{{end}}

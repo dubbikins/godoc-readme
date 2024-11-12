@@ -15,6 +15,7 @@ import (
 func ExampleCode(pkg *packages.Package) func(*doc.Example) string {
 
 	return func(ex *doc.Example) string {
+		
 		var buf = bytes.NewBuffer(nil)
 		buf.WriteString("<details>\n")
 		buf.WriteString(fmt.Sprintf("<summary>Example%s</summary>\n\n", ex.Name))

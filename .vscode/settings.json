@@ -6,5 +6,6 @@
     },
     "[godoc]": {
         "editor.formatOnSave": false
-    }
+    },
+
 }

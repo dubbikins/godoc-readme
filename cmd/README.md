@@ -5,31 +5,29 @@
 
 ![godoc-readme badge](https://img.shields.io/badge/generated%20by%20godoc--readme-00ADD8?style=plastic&logoSize=large&logo=Go&logoColor=00ADD8&labelColor=FFFFFF)
 
-You can use the godoc-readme CLI to generate a README.md file for your go project using comments you've already written! :open_mouth:
+Generate README.md file for your go project using comments you already write
 
-    Usage:
-        godoc-readme [flags]
+Usage:
+  godoc-readme [flags]
 
-    Flags:
-        -c, --confirm-updates   Use this flag to confirm overwriting existing README.md files.
-            The default behaviour is to overwrite the file without confirmation.
-            Confirmation also gives you the option to view the diff between the
-            existing and generated file before overwriting it.
-        -h, --help              help for godoc-readme
-        -r, --recursive         If set, recursively search for go packages in the directory
-            and generate a README.md for each package;
-            Default behavior is to only create a README for the package in the current directory.
-            --skip-all          Skips generating all sections besides the package documentation
-            --skip-consts       Shows generating the consts section
-            --skip-examples     Skips generating the examples section
-            --skip-filenames    Skips generating the files section
-            --skip-funcs        Skips generating the functions section
-            --skip-imports      Skips generating the imports section
-            --skip-vars         Skips generating the vars section
+Flags:
+  -c, --confirm          Use this flag to confirm overwriting existing README.md files. The default behaviour is to overwrite the file without confirmation. Confirmation also gives you the option to view the diff between the existing and generated file before overwriting it.
+  -h, --help             help for godoc-readme
+  -p, --package string   Specify the pattern for matching packages to generate the README.md files for. Default '' will match current package only
+  -r, --recursive        If set, recursively search for go packages in the directory and generate a README.md for each package; Default will only create a Readme for the package found in the current directory
+      --skip-all         Skips generating all sections besides the package documentation
+      --skip-consts      Shows generating the consts section
+      --skip-empty       Skips generating any type, func, var, const, or method that does not have a doc string
+      --skip-examples    Skips generating the examples section
+      --skip-filenames   Skips generating the files section
+      --skip-funcs       Skips generating the functions section
+      --skip-imports     Skips generating the imports section
+      --skip-types       Skips generating the types section
+      --skip-vars        Skips generating the vars section
 
 # Functions
 
-## [func Execute](./cmd.go#L109-L119)
+## [func Execute](./cmd.go#L130-L140)
 
 >```go
 >func Execute(args ...string) error
@@ -38,7 +36,7 @@ You can use the godoc-readme CLI to generate a README.md file for your go projec
 >Optionally, you can pass in a list of arguments to run the command with
 
 ---
-## [func init](./cmd.go#L22-L74)
+## [func init](./cmd.go#L23-L96)
 
 >```go
 >func init()
@@ -53,11 +51,19 @@ You can use the godoc-readme CLI to generate a README.md file for your go projec
 var confirm_updates bool
 ```
 
+```go
+var env string
+```
+
 >[!NOTE]
 >These Flags are used to determine which sections of the README.md file to generate
 
 ```go
 var flags template_functions.Flags = template_functions.Flags{}
+```
+
+```go
+var package_root string
 ```
 
 ```go
@@ -73,12 +79,11 @@ var rootCmd = &cobra.Command{
     Run: func(cmd *cobra.Command, args []string) {
 
         if readme, err := godoc_readme.NewReadme(func(ro *godoc_readme.ReadmeOptions) {
-            if !recursive {
-                ro.DirPattern = ro.Dir
+            ro.PackageDir = package_root
+            if recursive {
+                ro.PackageDir = "./..."
             }
-            if template_filename != "" {
-                ro.TemplateFile = template_filename
-            }
+            ro.Env = strings.Split(env, "")
             ro.ConfirmUpdates = confirm_updates
             ro.Flags = flags
 
@@ -97,20 +102,30 @@ var rootCmd = &cobra.Command{
 }
 ```
 
+# Examples
+
+<details>
+<summary>Example_help_command</summary>
+
 ```go
-var template_filename string
+func Example_help_command{
+    Execute("-h")
+
+}
+ // Output:
+ // 
+ // Generate README.md file for your go project using comments you already write
+ // 
+ // Usage:
+ //   godoc-readme [flags]
+ // 
+ // Flags:
+ //   -c, --confirm-updates   Use this flag to confirm overwriting existing README.md files. The default behaviour is to overwrite the file without confirmation. Confirmation also gives you the option to view the diff between the existing and generated file before overwriting it.
+ //   -h, --help              help for godoc-readme
+ //   -r, --recursive         If set, recursively search for go packages in the directory and generate a README.md for each package; Default will only create a Readme for the package found in the current directory
+ //       --skip-examples     Skips generating the examples defined in test files
+ // 
 ```
 
-## File Names
-
-- [cmd.go](./cmd.go)
-- [docs.go](./docs.go)
-
-## Imports
-
-- fmt
-- github.com/dubbikins/godoc-readme/godoc_readme
-- github.com/dubbikins/godoc-readme/godoc_readme/template_functions
-- github.com/spf13/cobra
-- os
+</details>
 

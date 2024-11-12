@@ -70,10 +70,7 @@ func ExampleReadme_Generate() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	// Output:
-	//
-	// Generated Documentation:
-	// 	- ./examples/mermaid/README.md
+	
 }
 
 

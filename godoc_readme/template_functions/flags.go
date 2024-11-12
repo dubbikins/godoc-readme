@@ -11,8 +11,8 @@ type Flags struct {
 	SkipMethods bool
 	SkipFilenames bool
 	SkipConsts bool
+	SkipEmpty bool
 	SkipAll bool
-	
 }
 
 func GetFlag(flags Flags) func(string ) bool {
@@ -32,6 +32,8 @@ func GetFlag(flags Flags) func(string ) bool {
 				return !flags.SkipFilenames
 			case "ShowConsts": 
 				return !flags.SkipConsts
+			case "ShowEmpty": 
+				return flags.SkipEmpty
 			case "ShowAll": 
 				return !flags.SkipAll
 			}

@@ -1,3 +1,3 @@
-{{ define ".Funcs.tmpl" }}{{ $len := len . }}{{ if gt $len 0 }}# Functions{{end}}
+{{ define ".Funcs.tmpl" }}{{if $filtered := filtered_funcs .}}{{ if gt (len $filtered) 0 }}# Functions{{end}}
 
-{{ range . }}{{ template ".Func.tmpl" . }}{{end}}{{end}}
+{{ range . }}{{ template ".Func.tmpl" . }}{{end}}{{end}}{{end}}

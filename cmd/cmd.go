@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/dubbikins/godoc-readme/godoc_readme"
 	"github.com/dubbikins/godoc-readme/godoc_readme/template_functions"
@@ -10,9 +11,9 @@ import (
 )
 
 var recursive bool = true
-var template_filename string
+var env string
 var confirm_updates bool
-
+var package_root string
 // NOTE(flags): These Flags are used to determine which sections of the README.md file to generate
 
 var flags template_functions.Flags = template_functions.Flags{
@@ -27,8 +28,18 @@ func init() {
 	)
 	rootCmd.PersistentFlags().BoolVarP(
 		&confirm_updates, 
-		"confirm-updates","c", false,
+		"confirm","c", false,
 		"Use this flag to confirm overwriting existing README.md files. The default behaviour is to overwrite the file without confirmation. Confirmation also gives you the option to view the diff between the existing and generated file before overwriting it.",
+	)
+	rootCmd.PersistentFlags().StringVarP(
+		&package_root, 
+		"package","p", "",
+		"Specify the pattern for matching packages to generate the README.md files for. Default '' will match current package only",
+	)
+	rootCmd.PersistentFlags().StringVarP(
+		&env, 
+		"env","e", "",
+		"Specify the environment variables that should be passed to the build system. Example: 'GOOS=linux GOARCH=amd64'",
 	)
 	rootCmd.PersistentFlags().BoolVar(
 		&flags.SkipExamples, 
@@ -51,6 +62,11 @@ func init() {
 		"Skips generating the imports section",
 	)
 	rootCmd.PersistentFlags().BoolVar(
+		&flags.SkipTypes, 
+		"skip-types", false,
+		"Skips generating the types section",
+	)
+	rootCmd.PersistentFlags().BoolVar(
 		&flags.SkipVars, 
 		"skip-vars", false,
 		"Skips generating the vars section",
@@ -61,10 +77,16 @@ func init() {
 		"Skips generating the files section",
 	)
 	rootCmd.PersistentFlags().BoolVar(
+		&flags.SkipEmpty, 
+		"skip-empty", false,
+		"Skips generating any type, func, var, const, or method that does not have a doc string",
+	)
+	rootCmd.PersistentFlags().BoolVar(
 		&flags.SkipAll, 
 		"skip-all", false,
 		"Skips generating all sections besides the package documentation",
 	)
+	
 	// rootCmd.PersistentFlags().StringVarP(
 	// 	&template_filename, 
 	// 	"template", "t", "", 
@@ -81,19 +103,18 @@ var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// fmt.Println(flags)
 		if readme, err := godoc_readme.NewReadme(func(ro *godoc_readme.ReadmeOptions) {
-			if !recursive {
-				ro.DirPattern = ro.Dir
-			}
-			if template_filename != "" {
-				ro.TemplateFile = template_filename
-			}
-			ro.ConfirmUpdates = confirm_updates
-			ro.Flags = flags
-	
+				ro.PackageDir = package_root
+				if recursive {
+					ro.PackageDir = "./..."
+				}
+				ro.Env = strings.Split(env, "")
+				ro.ConfirmUpdates = confirm_updates
+				ro.Flags = flags
+				
 		}); err != nil {
-			fmt.Println("err")
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+				fmt.Println("err")
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
 		} else {
 			if err = readme.Generate(); err != nil {
 				fmt.Println("Generate err")

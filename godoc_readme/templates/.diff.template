@@ -1,0 +1,175 @@
+{{define ".diff.template"}}
+<html>
+	<head>
+		<style> 
+			:root {
+			--background-color-primary: #EBF3FA;
+			--background-color-secondary: #E5F0F9;
+			--background-color-dark: #DDE7F3;
+			--old-bg-color: hsla(209, 15%, 91%, .45);
+			--border-width: .2em;
+			--border-width-large: .4em;
+			--concave-border-top-left: solid var(--border-width) #EBF3FA;
+			--concave-border-top-right: 4px;
+			--pressed-button-shadow: 4px 4px 8px 0px rgb(95 157 231 / 48%), -3px -3px 6px 3px #ffffff,inset -10px -8px 12px 0px #ffffff,inset 10px 8px 12px 0px rgb(95 157 231 / 32%);
+			--unpressed-button-shadow: 4px 4px 8px 0px rgb(95 157 231 / 48%), -3px -3px 6px 3px #ffffff,inset 10px 8px 12px 0px #ffffff,inset -10px -8px 12px 0px rgb(95 157 231 / 32%);
+
+			--convex-box-shadow-xlarge: 8px 8px 16px 0px rgb(95 157 231 / 48%), -12px -12px 24px 0px #ffffff;
+			--concave-gradient: linear-gradient(145deg, rgb(95 157 231 / 48%), #ffffff);
+			--convex-box-shadow: 6px 6px 12px 0px rgb(95 157 231 / 48%), -2px 0px 6px 3px #ffffff;
+			--concave-box-shadow: inset -4px -2px 16px 5px #ffffff,inset 4px 2px 16px 5px rgb(95 157 231 / 48%);
+			}
+			body {
+				color: hsl(213, 73%, 10%, .85);
+				text-shadow: -3px -3px 3px #ffffff, 4px 4px 6px rgb(95 157 231 / 48%);
+				font-size: 20px;
+				max-width: 100vw;
+				background-color: var(--background-color-secondary);
+				display: grid;
+				grid-template-columns: 1fr 1200px 1fr;
+			} 
+			.container { 
+				grid-column: 2;
+				display: grid;
+				grid-template-columns: subgrid;
+			} 
+
+			.modal-backdrop {
+				display: none;
+
+				z-index: 4;
+				position: fixed;
+				left: 0;
+				top: 0;
+				
+				width: 100vw;
+				height: 10vh;
+				backdrop-filter: blur(2px);
+				background-color: rgb(0,0,0);
+				background-color: rgba(0,0,0,0.4);
+			}
+			.modal{
+				display: none;
+				position: fixed;
+				z-index: 5;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				overflow: auto;
+				
+			}
+			.confirmation-container {
+				backdrop-filter: blur(2px);
+				font-family: 'Poppins',sans-serif;
+				z-index: 2;
+				vertical-align: middle;
+				align-items: center;
+				top: 0;
+				grid-column: 1/-1;
+				grid-row: 1;
+				position: sticky;
+				padding: 10px;
+				display: grid;
+				grid-template-columns: 1fr auto auto auto;
+				grid-gap: 10px;
+				text-wrap: nowrap; 
+				border-radius: 15px;
+			}
+			pre { 
+				font-family: Courier New;
+				text-wrap: wrap; 
+				padding: 30px; 
+				grid-column: 2;
+			
+				border-radius: 15px;
+				box-shadow: var(--convex-box-shadow-xlarge);
+				background: var(--background-color-primary);
+				border-color: var(--background-color-dark);
+
+				
+			} 
+			pre code {
+			font-family: Courier New;
+			}
+			.btn {
+				display: flex;
+				align-items: center;
+				max-height: 65px;
+				justify-content: center;
+				gap: 10px;
+				font-family: inherit;
+				font-size: 13px;
+				font-weight: 500;
+				text-transform: uppercase;
+				letter-spacing: 0.4px;
+				color: #7e97b8;
+				border-style: solid;
+				border-width: var(--border-width-large);
+				border-color: var(--background-color-secondary);
+				border-radius: 40px 40px 40px 40px;
+				padding: 16px 24px 16px 28px;
+				box-shadow: var(--unpressed-button-shadow);
+				background: var(--background-color-primary);
+				& a {
+					color: inherit;
+					text-decoration: none;
+					height: 100%;
+					width: 100%;
+				}
+				transition: all ease 0.2s;
+				transition: box-shadow 0.2s cubic-bezier(.29, 1.01, 1, -0.68);
+				
+			}
+			.btn:blur {
+				box-shadow: var(--unpressed-button-shadow);
+				background: var(--background-color-primary);
+			}
+			
+			.btn:focus {
+		
+				box-shadow: var(--pressed-button-shadow);
+			
+				border-color: var(--background-color-dark);
+				transition: box-shadow 0.2s cubic-bezier(.29, 1.01, 1, -0.68);
+			}
+
+			.circle-btn {
+				border-radius: 50%;
+			}
+			.confirm-button {
+				grid-column: 3;
+			}
+			.reject-button {
+				grid-column: 4;
+			}
+		</style>
+	</head>
+	<body>
+		<script>
+			function confirmChanges() {
+				
+			}
+			function closeModal() {
+				document.getElementById("confirmation-modal").style.display = "none";
+			}
+		</script>
+		<div class="confirmation-container">
+		<h1 style="grid-column:1">Summary of Changes</h1>
+			<button type="button" onclick="setTimeout(()=>{window.location.replace('/confirm')},300)" class="btn confirm-button">Accept</button>
+			<button type="submit" onclick="setTimeout(()=>{window.location.replace('/reject')},300)" class="btn reject-button">Reject</button>
+		</div>
+		<div class="container">
+			<pre>
+			    <code>{{ range . }}{{ if (eq .Type 1) }}<ins style="background:hsla(137, 96%, 43%, 0.1);color:hsla(137, 96%, 43%, 1);"\>{{ .Text }}</ins>{{ else if (eq .Type -1) }}<del style="background:hsla(0, 96%, 43%, 0.1);color:hsla(0, 96%, 43%, 1);">{{ .Text }}</del>{{ else }}<span>{{ .Text }}</span>{{end}}{{ end }}</code>
+			</pre>
+		</div>
+		<div class="modal modal-backdrop" id="confirmation-modal">
+			<button type="button" onclick="closeModal()" class="btn confirm-button">X</button>
+			<div class="modal">
+			modal
+			</div>
+		</div>
+	</body>
+</html>
+{{ end }}

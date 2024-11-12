@@ -9,7 +9,7 @@ Implements the godocs parsing and README generation from template files.
 
 # Types
 
-## [type PackageReadme](./readme.go#L164-L175)
+## [type PackageReadme](./readme.go#L179-L189)
 
 >```go
 >type PackageReadme struct {
@@ -17,29 +17,28 @@ Implements the godocs parsing and README generation from template files.
 >    Pkg     *packages.Package
 >    Doc     *doc.Package
 >    bytes.Buffer
->    package_dir   string
->    file_path     string
 >    rel_file_path string
 >    file_name     string
 >    file          *os.File
 >    cwd           string
+>    rejected      bool
 >}
 >```
 >PackageReadme is a struct that holds the package, ast and docs of the package
 >It's used to pass data to the readme template
 
---- 
-
-## [type Readme](./readme.go#L54-L62)
+## [type Readme](./readme.go#L60-L69)
 
 >```go
 >type Readme struct {
->    Pkgs     map[string]*packages.Package
->    TestPkgs map[string]*packages.Package
->    pkgs     []*packages.Package
->    options  *ReadmeOptions
->    stdio    io.Reader
->    readmes  []*PackageReadme
+>    Pkgs                       map[string]*packages.Package
+>    TestPkgs                   map[string]*packages.Package
+>    pkgs                       []*packages.Package
+>    options                    *ReadmeOptions
+>    readmes                    []*PackageReadme
+>    confirmation_listener      net.Listener
+>    confirmation_listener_port int
+>    confirmation_server        *http.Server
 >}
 >```
 >Readme is a struct that holds the packages, ast and docs of the package
@@ -71,7 +70,7 @@ Implements the godocs parsing and README generation from template files.
 
 ### Methods
 
-### [method Generate](./readme.go#L197-L208)
+### [method Generate](./readme.go#L211-L238)
 
 >```go
 >func (readme *Readme) Generate() (err error)
@@ -94,43 +93,45 @@ Implements the godocs parsing and README generation from template files.
 >Additionally, the following functions are available in the template engine:
 >
 >- `base`: [filepath.Base] Returns the base name of a file path
+<details>
+<summary>ExampleReadme_Generate</summary>
 
-### [method PackageREADMES](./readme.go#L210-L216)
+```go
+func ExampleReadme_Generate{
+    readme, err := NewReadme(func(ro *ReadmeOptions) {
+        ro.Dir = "../examples/mermaid"
+    })
+    if err != nil {
+        fmt.Fprintln(os.Stderr, err)
+        os.Exit(1)
+    }
+    if err = readme.Generate(); err != nil {
+        fmt.Fprintln(os.Stderr, err)
+        os.Exit(1)
+    }
 
->```go
->func (readme *Readme) PackageREADMES(yield func(*PackageReadme) bool)
->```
+}
+ // Output:
+ // 
+```
 
-### [method Packages](./readme.go#L218-L237)
+</details>
 
->```go
->func (readme *Readme) Packages(yield func(string, *packages.Package) bool)
->```
-
-### [method generate_pkg_readme](./readme.go#L239-L354)
-
->```go
->func (readme *Readme) generate_pkg_readme(pkg *packages.Package, filename string) (package_readme *PackageReadme, err error)
->```
-
---- 
-
-## [type ReadmeOptions](./readme.go#L64-L74)
+## [type ReadmeOptions](./readme.go#L73-L81)
 
 >```go
 >type ReadmeOptions struct {
->    Dir               string `env:"GODOC_README_MODULE_DIR"`
->    DirPattern        string `env:"GODOC_README_MODULE_DIR_PATTERN" default:"./..."`
->    TemplateFile      string `env:"GODOC_README_TEMPLATE_FILE"`
+>    PackageDir        string
+>    Dir               string
 >    Format            func([]byte) []byte
 >    package_load_mode packages.LoadMode
->
->    ConfirmUpdates bool
->    Flags          template_functions.Flags
+>    Env               []string `env:"-"`
+>    ConfirmUpdates    bool
+>    Flags             template_functions.Flags
 >}
 >```
-
---- 
+>ReadmeOptions is a struct that holds the options for the Readme struct
+>You can set the options via the options functions or by setting the environment variables defined in the `env` struct tag for the Option field
 
 ## [type RenderFlag](./flags.go#L33-L33)
 
@@ -158,11 +159,10 @@ Implements the godocs parsing and README generation from template files.
 >```
 >IsSet returns true if the flag is set in the RenderFlags
 
---- 
 ---
 # Functions
 
-## [func FormatMarkdown](./readme.go#L152-L160)
+## [func FormatMarkdown](./readme.go#L167-L175)
 
 >```go
 >func FormatMarkdown(md []byte) []byte
@@ -183,29 +183,4 @@ Implements the godocs parsing and README generation from template files.
 //go:embed templates/*
 var readme_templates embed.FS
 ```
-
-## File Names
-
-- [docs.go](./docs.go)
-- [flags.go](./flags.go)
-- [readme.go](./readme.go)
-
-## Imports
-
-- bytes
-- embed
-- fmt
-- github.com/dubbikins/envy
-- github.com/dubbikins/godoc-readme/godoc_readme/template_functions
-- github.com/sergi/go-diff/diffmatchpatch
-- go/doc
-- golang.org/x/tools/go/packages
-- io
-- os
-- path
-- path/filepath
-- regexp
-- sort
-- strings
-- text/template
 

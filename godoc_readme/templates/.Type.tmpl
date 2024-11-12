@@ -1,7 +1,6 @@
 {{define ".Type.tmpl"}}
-## {{link (printf "type %s" .Name) .Decl}}
+{{if not (skip_empty .Doc)}}## {{link (printf "type %s" .Name) .Decl}}
 
 {{section (gen_decl .Decl) 1}}{{section .Doc 1}}{{alert .Name }}{{ range .Examples}}{{example .}}{{end}}
 {{ template ".Type.Methods.tmpl" . }}
---- 
-{{end}}
+{{end}}{{end}}
